@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpatialPartitioning", "SpatialPartitioning\SpatialPartitioning.vcxproj", "{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Debug|x64.ActiveCfg = Debug|x64
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Debug|x64.Build.0 = Debug|x64
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Debug|x86.ActiveCfg = Debug|Win32
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Debug|x86.Build.0 = Debug|Win32
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Release|x64.ActiveCfg = Release|x64
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Release|x64.Build.0 = Release|x64
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Release|x86.ActiveCfg = Release|Win32
+		{385A8C5F-B869-49F6-9EEF-8F665C1E3EA4}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {24688FB2-34F1-4ADB-8277-D80351D73772}
+	EndGlobalSection
+EndGlobal
