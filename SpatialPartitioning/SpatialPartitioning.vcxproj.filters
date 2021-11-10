@@ -18,15 +18,15 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utility\Instrumentor.cpp">
+    <ClCompile Include="src\Utilities\Instrumentor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Utility\Vector2.h">
+    <ClInclude Include="src\Utilities\Instrumentor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Utility\Instrumentor.h">
+    <ClInclude Include="src\Utilities\Vector2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -139,12 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Utility\Instrumentor.cpp" />
+    <ClCompile Include="src\Utilities\Instrumentor.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Utility\Instrumentor.h" />
-    <ClInclude Include="src\Utility\Vector2.h" />
+    <ClInclude Include="src\Utilities\Instrumentor.h" />
+    <ClInclude Include="src\Utilities\Vector2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
