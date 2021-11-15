@@ -15,8 +15,8 @@ public:
 
 	float dot(const Vector2& rhs);
 
-	float x;
-	float y;
+	float x = 0.0f;
+	float y = 0.0f;
 };
 
 // Vector2 operators
