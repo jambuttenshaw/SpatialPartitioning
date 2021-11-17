@@ -139,12 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\CollisionWorld.cpp" />
     <ClCompile Include="src\Utilities\AABB.cpp" />
     <ClCompile Include="src\Utilities\Instrumentor.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Utilities\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CollisionWorld.h" />
+    <ClInclude Include="src\SpatialPartition.h" />
     <ClInclude Include="src\Utilities\AABB.h" />
     <ClInclude Include="src\Utilities\Instrumentor.h" />
     <ClInclude Include="src\Utilities\Vector2.h" />

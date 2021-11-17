@@ -5,14 +5,14 @@ Vector2 AxisAlignedBoundingBox::TopLeft() const
     return mCentre - (0.5f * mSize);
 }
 
-bool AxisAlignedBoundingBox::Contains(const Vector2& point)
+bool AxisAlignedBoundingBox::Contains(const Vector2& point) const
 {
     Vector2 topleft = TopLeft();
     return  (point.x > topleft.x && point.x < topleft.x + mSize.x) &&
             (point.y > topleft.y && point.y < topleft.y + mSize.y);
 }
 
-bool AxisAlignedBoundingBox::Intersects(const AxisAlignedBoundingBox& other)
+bool AxisAlignedBoundingBox::Intersects(const AxisAlignedBoundingBox& other) const
 {
     Vector2 topleft = TopLeft();
  

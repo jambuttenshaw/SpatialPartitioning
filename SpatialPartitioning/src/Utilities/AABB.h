@@ -17,8 +17,8 @@ public:
 	inline void Translate(const Vector2& translation) { mCentre += translation; }
 
 	// Intersection checks
-	bool Contains(const Vector2& point);
-	bool Intersects(const AxisAlignedBoundingBox& other);
+	bool Contains(const Vector2& point) const;
+	bool Intersects(const AxisAlignedBoundingBox& other) const;
 
 private:
 	Vector2 mCentre, mSize;
