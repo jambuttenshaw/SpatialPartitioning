@@ -14,5 +14,6 @@ public:
 
 	virtual void Insert(AABB* object) = 0;
 	virtual void Delete(AABB* object) = 0;
+
 	virtual void UpdateColliderInPartition(AABB* object) = 0;
 };
