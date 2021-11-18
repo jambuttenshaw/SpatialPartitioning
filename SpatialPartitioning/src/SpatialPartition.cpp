@@ -8,7 +8,7 @@ void SpatialPartition::SetCollisionWorld(CollisionWorld* collisionWorld)
 	mCollisionWorld = collisionWorld;
 }
 
-const AABB* SpatialPartition::GetAABBFromColliderID(ColliderID id)
+const AABB& SpatialPartition::GetAABBFromColliderID(ColliderID id)
 {
 	return mCollisionWorld->Get(id);
 }

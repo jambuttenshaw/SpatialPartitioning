@@ -30,7 +30,7 @@ private:
 	// the size of each cell in the grid
 	// all cells in the grid are square, so it need only be represented by a single float
 	const float mCellSize = 4.0f;
-	unsigned int mCellsX = 0, mCellsY = 0;
+	size_t mCellsX = 0, mCellsY = 0;
 
 	// the number of buckets that have at least one collider in them
 	size_t mCount = 0;

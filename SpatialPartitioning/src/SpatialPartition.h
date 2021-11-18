@@ -34,7 +34,7 @@ public:
 	void SetCollisionWorld(CollisionWorld* collisionWorld);
 
 protected:
-	const AABB* GetAABBFromColliderID(ColliderID id);
+	const AABB& GetAABBFromColliderID(ColliderID id);
 
 protected:
 	AABB mWorldBounds;

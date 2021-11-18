@@ -42,10 +42,13 @@ public:
 	
 	void Resize(ColliderID id, const Vector2f& newSize);
 
-	AABB* Get(ColliderID id);
+	const AABB& Get(ColliderID id);
 
-	std::vector<AABB*> GetCollisions(ColliderID id);
+	std::vector<ColliderID> GetCollisions(ColliderID id);
 
+private:
+	// only allow AABB's to be directly modified from within this class
+	AABB& GetNonConst(ColliderID id);
 
 private:
 	std::vector<AABB> mObjects;
