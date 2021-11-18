@@ -9,28 +9,28 @@ public:
 
 	Vector2(float _x, float _y) : x(_x), y(_y) {}
 
-	float sqr_magnitude()
+	inline float sqr_magnitude()
 	{
 		return x * x + y * y;
 	}
-	float magnitude()
+	inline float magnitude()
 	{
 		return sqrtf(static_cast<float>(sqr_magnitude()));
 	}
 
-	void normalise()
+	inline void normalise()
 	{
 		float mag = magnitude();
 		x /= mag;
 		y /= mag;
 	}
-	Vector2 normalised()
+	inline Vector2 normalised()
 	{
 		float mag = magnitude();
 		return Vector2{ x / mag, y / mag };
 	}
 
-	float dot(const Vector2& rhs)
+	inline float dot(const Vector2& rhs)
 	{
 		return x * rhs.x + y * rhs.y;
 	}

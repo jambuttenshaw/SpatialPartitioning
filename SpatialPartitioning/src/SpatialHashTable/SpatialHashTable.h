@@ -2,7 +2,7 @@
 
 #include "SpatialPartition.h"
 
-#include <list>
+#include <forward_list>
 
 class SpatialHashTable : public SpatialPartition
 {
@@ -17,12 +17,15 @@ public:
 
 private:
 
-	size_t GetIndex(Vector2 position);
+	Vector2 GetCell(Vector2 position);
+	size_t GetIndex(Vector2 cell);
+
+	bool BucketContainsAABB(AABB* aabb, size_t bucketIndex);
 
 private:
 	// the hash table data structure
 	// a container to contain the buckets
-	std::vector<std::list<AABB*>> mTable;
+	std::vector<std::forward_list<AABB*>> mTable;
 
 	// the size of each cell in the grid
 	// all cells in the grid are square, so it need only be represented by a single float
