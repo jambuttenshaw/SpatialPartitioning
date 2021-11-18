@@ -39,6 +39,8 @@ public:
 
 	T x = T();
 	T y = T();
+
+	static const Vector2<float> Zero;
 };
 
 // Vector2 operators
@@ -101,6 +103,11 @@ bool operator==(Vector2<T> lhs, const Vector2<T>& rhs)
 	static const float epsilon = 0.000001f;
 	return ((fabsf(static_cast<float>(lhs.x - rhs.x)) < epsilon) &&
 			(fabsf(static_cast<float>(lhs.y - rhs.y)) < epsilon));
+}
+template<typename T>
+bool operator!=(Vector2<T> lhs, const Vector2<T>& rhs)
+{
+	return !(lhs == rhs);
 }
 
 

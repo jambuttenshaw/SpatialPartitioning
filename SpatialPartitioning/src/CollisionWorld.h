@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <type_traits>
+#include <cassert>
 
 #include "Utilities/Constants.h"
 #include "Utilities/AABB.h"
@@ -13,24 +14,30 @@
 class CollisionWorld
 {
 public:
-	template <typename T>
-	static CollisionWorld* Create(const AABB& worldBounds)
+	static CollisionWorld* Instance()
 	{
-		// the spatial partitioning system must inherit from SpatialPartition
-		static_assert(std::is_base_of<SpatialPartition, T>::value);
-
-		CollisionWorld* instance = new CollisionWorld{ worldBounds };
-		instance->mSpacialPartition = new T(worldBounds);
-
-		return instance;
+		static CollisionWorld instance;
+		return &instance;
 	}
 
 private:
-	CollisionWorld(const AABB& worldBounds);
+	CollisionWorld() = default;
 		
 public:
 	~CollisionWorld();
 
+	// setup functions
+	template<typename T>
+	void SetSpatialPartitioner()
+	{
+		assert(mSpatialPartition == nullptr && "Spatial partitioner already exists!");
+
+		// the spatial partitioning system must inherit from SpatialPartition
+		static_assert(std::is_base_of<SpatialPartition, T>::value);
+		assert((mWorldBounds.Size() != Vector2f::Zero) && "Initialize world size before partitioning!");
+		mSpatialPartition = new T(mWorldBounds);
+	}
+	inline void SetWorldBounds(const AABB& worldBounds)	{ mWorldBounds = worldBounds; }
 
 	ColliderID CreateAABB(const AABB& aabb);
 	void DeleteAABB(ColliderID id);
@@ -50,7 +57,7 @@ private:
 
 private:
 	std::vector<AABB> mObjects;
-	SpatialPartition* mSpacialPartition = nullptr;
+	SpatialPartition* mSpatialPartition = nullptr;
 
 	std::unordered_map<ColliderID, size_t> mIDToIndex;
 	std::unordered_map<size_t, ColliderID> mIndexToID;

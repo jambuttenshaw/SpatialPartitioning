@@ -5,6 +5,7 @@
 class AxisAlignedBoundingBox
 {
 public:
+	AxisAlignedBoundingBox() = default;
 	AxisAlignedBoundingBox(float x, float y, float width, float height) : mPosition(x, y), mSize(width, height) {}
 	AxisAlignedBoundingBox(const Vector2f& topleft, const Vector2f& size) : mPosition(topleft), mSize(size) {}
 

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Vector2.h"
+
+
+// maths
+const Vector2f Vector2f::Zero = { 0, 0 };
 
 /*
 While it may be annoying to have to access all colliders through an integer ID rather than directly modifying the object itself,

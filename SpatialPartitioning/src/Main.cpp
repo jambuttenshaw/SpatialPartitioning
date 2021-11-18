@@ -8,8 +8,8 @@
 
 int main()
 {
+	// set up the collision world
 	AABB worldBounds{ {0, 0}, {20, 20} };
-	CollisionWorld* collisionWorld = CollisionWorld::Create<SpatialHashTable>(worldBounds);
-
-	delete collisionWorld;
+	CollisionWorld::Instance()->SetWorldBounds(worldBounds);
+	CollisionWorld::Instance()->SetSpatialPartitioner<SpatialHashTable>();
 }

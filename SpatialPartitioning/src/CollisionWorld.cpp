@@ -1,15 +1,9 @@
 #include "CollisionWorld.h"
 
 
-#include <cassert>
-
-CollisionWorld::CollisionWorld(const AABB& worldBounds)
-	: mWorldBounds(worldBounds)
-{
-}
 CollisionWorld::~CollisionWorld()
 {
-	delete mSpacialPartition;
+	delete mSpatialPartition;
 }
 
 ColliderID CollisionWorld::CreateAABB(const AABB& aabb)
@@ -28,7 +22,7 @@ ColliderID CollisionWorld::CreateAABB(const AABB& aabb)
 	mObjects.push_back(aabb);
 
 	// insert this object into the spacial partition
-	mSpacialPartition->Insert(newID, aabb);
+	mSpatialPartition->Insert(newID, aabb);
 
 	// increment the available id
 	mNextID++;
@@ -42,7 +36,7 @@ void CollisionWorld::DeleteAABB(ColliderID id)
 	assert(mIDToIndex.find(id) != mIDToIndex.end());
 
 	// tell the spatial partitioning system the object has been deleted
-	mSpacialPartition->Delete(id, Get(id));
+	mSpatialPartition->Delete(id, Get(id));
 
 	// to retain density in the vector, we will move the last element in the vector
 	// into the space of the object were about to delete
@@ -108,7 +102,7 @@ std::vector<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 	
 	// perform broad-phase collision detection using the spacial partition
 	std::vector<ColliderID> potentialCollisions;
-	mSpacialPartition->Retrieve(potentialCollisions, object);
+	mSpatialPartition->Retrieve(potentialCollisions, object);
 
 
 	// perform narrow-phase collision detection

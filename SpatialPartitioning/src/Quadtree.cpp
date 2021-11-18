@@ -1,5 +1,8 @@
 #include "Quadtree.h"
 
+#include "CollisionWorld.h"
+
+
 Quadtree::Quadtree(const AABB& bounds)
 	: SpatialPartition(bounds), mChildren({ nullptr, nullptr, nullptr, nullptr })
 {
@@ -26,8 +29,8 @@ void Quadtree::Insert(ColliderID object, const AABB& bounds)
 		auto it = mObjects.begin();
 		while (it != mObjects.end())
 		{
-			int index = GetIndex(/* HELP! */);
-			// need a way to work out where to insert this node...
+			const AABB& childBouns = CollisionWorld::Instance()->Get(*it);
+			int index = GetIndex(childBouns);
 
 			if (index == -1)
 			{
@@ -36,8 +39,9 @@ void Quadtree::Insert(ColliderID object, const AABB& bounds)
 			}
 			else
 			{
-				mChildren[index]->Insert(*it, /* HELP */);
-				// remove object
+				mChildren[index]->Insert(*it, CollisionWorld::Instance()->Get(*it));
+				// remove object from this nodes objects, as it will belong to its children
+				it = mObjects.erase(it);
 				mObjectCount--;
 			}
 		}
