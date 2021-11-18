@@ -1,15 +1,17 @@
 #pragma once
 
+#include <cmath>
 
+template<typename T>
 class Vector2
 {
 public:
 	Vector2() = default;
 	~Vector2() = default;
 
-	Vector2(float _x, float _y) : x(_x), y(_y) {}
+	Vector2(T _x, T _y) : x(_x), y(_y) {}
 
-	inline float sqr_magnitude()
+	inline T sqr_magnitude()
 	{
 		return x * x + y * y;
 	}
@@ -24,71 +26,83 @@ public:
 		x /= mag;
 		y /= mag;
 	}
-	inline Vector2 normalised()
+	inline Vector2<T> normalised()
 	{
 		float mag = magnitude();
-		return Vector2{ x / mag, y / mag };
+		return Vector2<T>{ x / mag, y / mag };
 	}
 
-	inline float dot(const Vector2& rhs)
+	inline T dot(const Vector2<T>& rhs)
 	{
 		return x * rhs.x + y * rhs.y;
 	}
 
-	float x = float();
-	float y = float();
+	T x = T();
+	T y = T();
 };
 
 // Vector2 operators
 
+template<typename T>
+Vector2<T> operator+(Vector2<T> lhs, const Vector2<T>& rhs)
+{
+	return Vector2<T>{ lhs.x + rhs.x, lhs.y + rhs.y };
+}
+template<typename T>
+Vector2<T> operator-(Vector2<T> lhs, const Vector2<T>& rhs)
+{
+	return Vector2<T>{ lhs.x - rhs.x, lhs.y - rhs.y };
+}
+template<typename T, typename U>
+Vector2<T> operator*(Vector2<T> lhs, U rhs)
+{
+	return Vector2<T>{ lhs.x * rhs, lhs.y * rhs };
+}
+template<typename T, typename U>
+Vector2<T> operator*(U lhs, const Vector2<T>& rhs)
+{
+	return Vector2<T>{ rhs.x * lhs, rhs.y * lhs };
+}
+template<typename T, typename U>
+Vector2<T> operator/(Vector2<T> lhs, U rhs)
+{
+	return Vector2<T>{ lhs.x / rhs, lhs.y / rhs };
+}
 
-Vector2 operator+(Vector2 lhs, const Vector2& rhs)
-{
-	return Vector2{ lhs.x + rhs.x, lhs.y + rhs.y };
-}
-Vector2 operator-(Vector2 lhs, const Vector2& rhs)
-{
-	return Vector2{ lhs.x - rhs.x, lhs.y - rhs.y };
-}
-Vector2 operator*(Vector2 lhs, float rhs)
-{
-	return Vector2{ lhs.x * rhs, lhs.y * rhs };
-}
-Vector2 operator*(float lhs, const Vector2& rhs)
-{
-	return Vector2{ rhs.x * lhs, rhs.y * lhs };
-}
-Vector2 operator/(Vector2 lhs, float rhs)
-{
-	return Vector2{ lhs.x / rhs, lhs.y / rhs };
-}
-
-
-void operator+=(Vector2& lhs, const Vector2& rhs)
+template<typename T>
+void operator+=(Vector2<T>& lhs, const Vector2<T>& rhs)
 {
 	lhs.x += rhs.x;
 	lhs.y += rhs.y;
 }
-void operator-=(Vector2& lhs, const Vector2& rhs)
+template<typename T>
+void operator-=(Vector2<T>& lhs, const Vector2<T>& rhs)
 {
 	lhs.x -= rhs.x;
 	lhs.y -= rhs.y;
 }
-void operator*=(Vector2& lhs, float rhs)
+template<typename T, typename U>
+void operator*=(Vector2<T>& lhs, U rhs)
 {
 	lhs.x *= rhs;
 	lhs.y *= rhs;
 }
-void operator/=(Vector2& lhs, float rhs)
+template<typename T, typename U>
+void operator/=(Vector2<T>& lhs, U rhs)
 {
 	lhs.x /= rhs;
 	lhs.y /= rhs;
 }
 
 
-bool operator==(Vector2 lhs, const Vector2& rhs)
+template<typename T>
+bool operator==(Vector2<T> lhs, const Vector2<T>& rhs)
 {
 	static const float epsilon = 0.000001f;
 	return ((fabsf(static_cast<float>(lhs.x - rhs.x)) < epsilon) &&
 			(fabsf(static_cast<float>(lhs.y - rhs.y)) < epsilon));
 }
+
+
+using Vector2f = Vector2<float>;
+using Vector2i = Vector2<int>;

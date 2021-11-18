@@ -15,21 +15,23 @@ SpatialHashTable::SpatialHashTable(const AABB& worldBounds)
 	mTable.resize(cellCount);
 }
 
-void SpatialHashTable::Insert(AABB* object)
+void SpatialHashTable::Insert(ColliderID object)
 {
+	const AABB* aabb = GetAABBFromColliderID(object);
+
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
-	assert((mWorldBounds.Contains(object->TopLeft()) &&
-		mWorldBounds.Contains(object->TopLeft() + object->Size()))
+	assert((mWorldBounds.Contains(aabb->TopLeft()) &&
+		mWorldBounds.Contains(aabb->TopLeft() + aabb->Size()))
 		&& "AABB is outside of the world!");
 
 
 	// get the grid index of the topleft and bottom right of the object
-	Vector2 topLeftCell = GetCell(object->TopLeft());
-	Vector2 bottomRightCell = GetCell(object->TopLeft() + object->Size());
+	Vector2i topLeftCell = GetCell(aabb->TopLeft());
+	Vector2i bottomRightCell = GetCell(aabb->TopLeft() + aabb->Size());
 
 	// perform some check to make sure this AABB has not already been partitioned
-	if (BucketContainsAABB(object, GetIndex(topLeftCell))) return;
+	if (BucketContainsCollider(object, GetIndex(topLeftCell))) return;
 
 
 	// iterate through every cell the object is in
@@ -38,23 +40,25 @@ void SpatialHashTable::Insert(AABB* object)
 		for (int x = topLeftCell.x; x < bottomRightCell.x - topLeftCell.x; x++)
 		{
 			// insert this object into this cell
-			mTable[GetIndex({ x, y })].push_front(object);
+			mTable[GetIndex({ x, y })].emplace_front(object);
 		}
 	}
 }
 
-void SpatialHashTable::Delete(AABB* object)
+void SpatialHashTable::Delete(ColliderID object)
 {
+	const AABB* aabb = GetAABBFromColliderID(object);
+
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
-	assert((mWorldBounds.Contains(object->TopLeft()) &&
-		mWorldBounds.Contains(object->TopLeft() + object->Size()))
+	assert((mWorldBounds.Contains(aabb->TopLeft()) &&
+		mWorldBounds.Contains(aabb->TopLeft() + aabb->Size()))
 		&& "AABB is outside of the world!");
 
 
 	// get the grid index of the topleft and bottom right of the object
-	Vector2 topLeftCell = GetCell(object->TopLeft());
-	Vector2 bottomRightCell = GetCell(object->TopLeft() + object->Size());
+	Vector2i topLeftCell = GetCell(aabb->TopLeft());
+	Vector2i bottomRightCell = GetCell(aabb->TopLeft() + aabb->Size());
 
 
 	// iterate through every cell the object is in
@@ -68,7 +72,7 @@ void SpatialHashTable::Delete(AABB* object)
 	}
 }
 
-std::vector<AABB*> SpatialHashTable::Retrieve(const AABB& bounds)
+std::vector<ColliderID> SpatialHashTable::Retrieve(const AABB& bounds)
 {
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
@@ -77,10 +81,10 @@ std::vector<AABB*> SpatialHashTable::Retrieve(const AABB& bounds)
 		&& "AABB is outside of the world!");
 
 	// get the grid index of the topleft and bottom right of the object
-	Vector2 topLeftCell = GetCell(bounds.TopLeft());
-	Vector2 bottomRightCell = GetCell(bounds.TopLeft() + bounds.Size());
+	Vector2i topLeftCell = GetCell(bounds.TopLeft());
+	Vector2i bottomRightCell = GetCell(bounds.TopLeft() + bounds.Size());
 
-	std::vector<AABB*> results;
+	std::vector<ColliderID> results;
 	// iterate through every cell the object is in
 	for (int y = topLeftCell.y; y < bottomRightCell.y - topLeftCell.y; y++)
 	{
@@ -96,24 +100,25 @@ std::vector<AABB*> SpatialHashTable::Retrieve(const AABB& bounds)
 }
 
 
-Vector2 SpatialHashTable::GetCell(Vector2 position)
+Vector2i SpatialHashTable::GetCell(Vector2f position)
 {
-	return Vector2{ floorf(position.x / mCellSize), floorf(position.y / mCellSize) };
+	return Vector2i{ static_cast<int>(floorf(position.x / mCellSize)),
+					 static_cast<int>(floorf(position.y / mCellSize)) };
 }
 
-size_t SpatialHashTable::GetIndex(Vector2 cell)
+size_t SpatialHashTable::GetIndex(Vector2i cell)
 {
 	// because the world is a finite size, we know there will be no collisions in this "hash" function
 	// each cell in the grid can be given an integer ID, and this can be used as the index into the table
 	return static_cast<size_t>(cell.x + (cell.y * mCellsX));
 }
 
-bool SpatialHashTable::BucketContainsAABB(AABB* aabb, size_t bucketIndex)
+bool SpatialHashTable::BucketContainsCollider(ColliderID collider, size_t bucketIndex)
 {
 	auto& bucket = mTable[bucketIndex];
 	for (const auto& i : bucket)
 	{
-		if (i == aabb) return true;
+		if (i == collider) return true;
 	}
 	return false;
 }

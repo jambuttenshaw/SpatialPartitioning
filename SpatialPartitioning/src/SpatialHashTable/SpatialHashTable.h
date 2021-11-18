@@ -10,22 +10,22 @@ public:
 	SpatialHashTable(const AABB& worldBounds);
 	virtual ~SpatialHashTable() = default;
 
-	virtual void Insert(AABB* object) override;
-	virtual void Delete(AABB* object) override;
+	virtual void Insert(ColliderID object) override;
+	virtual void Delete(ColliderID object) override;
 
-	virtual std::vector<AABB*> Retrieve(const AABB& bounds) override;
+	virtual std::vector<ColliderID> Retrieve(const AABB& bounds) override;
 
 private:
 
-	Vector2 GetCell(Vector2 position);
-	size_t GetIndex(Vector2 cell);
+	Vector2i GetCell(Vector2f position);
+	size_t GetIndex(Vector2i cell);
 
-	bool BucketContainsAABB(AABB* aabb, size_t bucketIndex);
+	bool BucketContainsCollider(ColliderID aabb, size_t bucketIndex);
 
 private:
 	// the hash table data structure
 	// a container to contain the buckets
-	std::vector<std::forward_list<AABB*>> mTable;
+	std::vector<std::forward_list<ColliderID>> mTable;
 
 	// the size of each cell in the grid
 	// all cells in the grid are square, so it need only be represented by a single float

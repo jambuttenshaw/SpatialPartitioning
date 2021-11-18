@@ -3,60 +3,47 @@
 #include <vector>
 #include <type_traits>
 
+#include "Utilities/Constants.h"
 #include "Utilities/AABB.h"
-#include "Utilities/Vector2.h"
 
 #include "SpatialPartition.h"
-
-using ColliderID = size_t;
 
 
 class CollisionWorld
 {
 public:
 	template<typename T>
-	CollisionWorld()
+	CollisionWorld(const AABB& worldBounds)
+		: mWorldBounds(worldBounds)
 	{
-		CreateSpatialPartition<T>();
+		// the spatial partitioning system must inherit from SpatialPartition
+		static_assert(std::is_base_of<SpatialPartition, T>::value);
+
+		mSpacialPartition = new T(mWorldBounds);
+		mSpacialPartition->SetCollisionWorld(this);
 	}
 	~CollisionWorld()
 	{
-		DeleteSpatialPartition();
+		delete mSpacialPartition;
 	}
-	template<typename T>
-	void SetSpatialPartitioner()
-	{
-		DeleteSpatialPartition();
-		CreateSpatialPartition<T>();
-	}
-
 
 
 	ColliderID CreateAABB(const AABB& aabb);
 	void DeleteAABB(ColliderID id);
 	
-	void Translate(ColliderID id, const Vector2& translation);
-	void SetPosition(ColliderID id, const Vector2& position);
+	void Translate(ColliderID id, const Vector2f& translation);
+	void SetPosition(ColliderID id, const Vector2f& position);
 	
-	void Resize(ColliderID id, const Vector2& newSize);
+	void Resize(ColliderID id, const Vector2f& newSize);
 
-	const AABB& Get(ColliderID id);
+	AABB* Get(ColliderID id);
 
 	std::vector<AABB*> GetCollisions(ColliderID id);
 
-private:
-	template<typename T>
-	void CreateSpatialPartition()
-	{
-		static_assert(std::is_base_of<SpatialPartition::T>::value);
-		mSpacialPartition = new T;
-	}
-	void DeleteSpatialPartition()
-	{
-		delete mSpacialPartition;
-	}
 
 private:
 	std::vector<AABB> mObjects;
 	SpatialPartition* mSpacialPartition = nullptr;
+
+	AABB mWorldBounds;
 };

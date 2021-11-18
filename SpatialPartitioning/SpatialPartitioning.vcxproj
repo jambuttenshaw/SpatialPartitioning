@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="src\CollisionWorld.cpp" />
     <ClCompile Include="src\SpatialHashTable\SpatialHashTable.cpp" />
+    <ClCompile Include="src\SpatialPartition.cpp" />
     <ClCompile Include="src\Utilities\AABB.cpp" />
     <ClCompile Include="src\Utilities\Instrumentor.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="src\SpatialHashTable\SpatialHashTable.h" />
     <ClInclude Include="src\SpatialPartition.h" />
     <ClInclude Include="src\Utilities\AABB.h" />
+    <ClInclude Include="src\Utilities\Constants.h" />
     <ClInclude Include="src\Utilities\Instrumentor.h" />
     <ClInclude Include="src\Utilities\Vector2.h" />
   </ItemGroup>

@@ -5,13 +5,27 @@
 
 ColliderID CollisionWorld::CreateAABB(const AABB& aabb)
 {
+	ColliderID newIndex = mObjects.size();
+
+	mObjects.push_back(aabb);
+	mSpacialPartition->Insert(newIndex);
+
+	return newIndex;
 }
 
 void CollisionWorld::DeleteAABB(ColliderID id)
 {
+	assert(id < mObjects.size());
+
+	mSpacialPartition->Delete(id);
+
+	// THIS NEEDS FIXED! 
+	// THIS WILL INVALIDATE MANY POINTERS IN THE SPATIAL PARTITION SYSTEM!!!
+	assert(false); 
+	mObjects.erase(mObjects.begin() + id);
 }
 
-void CollisionWorld::Translate(ColliderID id, const Vector2& translation)
+void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)
 {
 	assert(id < mObjects.size());
 
@@ -19,7 +33,7 @@ void CollisionWorld::Translate(ColliderID id, const Vector2& translation)
 	// update object data inside spatial partition
 }
 
-void CollisionWorld::SetPosition(ColliderID id, const Vector2& position)
+void CollisionWorld::SetPosition(ColliderID id, const Vector2f& position)
 {
 	assert(id < mObjects.size());
 
@@ -27,7 +41,7 @@ void CollisionWorld::SetPosition(ColliderID id, const Vector2& position)
 	// update object data inside spatial partition
 }
 
-void CollisionWorld::Resize(ColliderID id, const Vector2& newSize)
+void CollisionWorld::Resize(ColliderID id, const Vector2f& newSize)
 {
 	assert(id < mObjects.size());
 
@@ -35,10 +49,10 @@ void CollisionWorld::Resize(ColliderID id, const Vector2& newSize)
 	// update object data inside spatial partition
 }
 
-const AABB& CollisionWorld::Get(ColliderID id)
+AABB* CollisionWorld::Get(ColliderID id)
 {
 	assert(id < mObjects.size());
-	return mObjects[id];
+	return &mObjects[id];
 }
 
 std::vector<AABB*> CollisionWorld::GetCollisions(ColliderID id)
@@ -48,7 +62,7 @@ std::vector<AABB*> CollisionWorld::GetCollisions(ColliderID id)
 	const AABB& object = mObjects[id];
 	
 	// perform broad-phase collision detection using the spacial partition
-	std::vector<AABB*> potentialCollisions = mSpacialPartition->Retrieve(object);
+	std::vector<ColliderID> potentialCollisions = mSpacialPartition->Retrieve(object);
 
 
 	// perform narrow-phase collision detection
@@ -58,7 +72,7 @@ std::vector<AABB*> CollisionWorld::GetCollisions(ColliderID id)
 
 	for (size_t i = 0; i < potentialCollisions.size(); i++)
 	{
-		AABB* potentialCollision = potentialCollisions.at(i);
+		AABB* potentialCollision = Get(potentialCollisions.at(i));
 
 		if (object.Intersects(*potentialCollision))
 			collisions[i] = potentialCollision;
