@@ -21,16 +21,13 @@
     <ClCompile Include="src\Utilities\Instrumentor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utilities\Vector2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Utilities\AABB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\CollisionWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpatialHashTable.cpp">
+    <ClCompile Include="src\SpatialHashTable\SpatialHashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,7 +47,7 @@
     <ClInclude Include="src\CollisionWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpatialHashTable.h">
+    <ClInclude Include="src\SpatialHashTable\SpatialHashTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,6 +5,7 @@
 class AxisAlignedBoundingBox
 {
 public:
+	AxisAlignedBoundingBox(float x, float y, float width, float height) : mCentre(x, y), mSize(width, height) {}
 	AxisAlignedBoundingBox(const Vector2& centre, const Vector2& size) : mCentre(centre), mSize(size) {}
 
 	inline const Vector2& Centre() const { return mCentre; }

@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,15 +144,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\CollisionWorld.cpp" />
-    <ClCompile Include="src\SpatialHashTable.cpp" />
+    <ClCompile Include="src\SpatialHashTable\SpatialHashTable.cpp" />
     <ClCompile Include="src\Utilities\AABB.cpp" />
     <ClCompile Include="src\Utilities\Instrumentor.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Utilities\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CollisionWorld.h" />
-    <ClInclude Include="src\SpatialHashTable.h" />
+    <ClInclude Include="src\SpatialHashTable\SpatialHashTable.h" />
     <ClInclude Include="src\SpatialPartition.h" />
     <ClInclude Include="src\Utilities\AABB.h" />
     <ClInclude Include="src\Utilities\Instrumentor.h" />

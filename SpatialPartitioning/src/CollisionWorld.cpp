@@ -48,7 +48,7 @@ std::vector<AABB*> CollisionWorld::GetCollisions(ColliderID id)
 	const AABB& object = mObjects[id];
 	
 	// perform broad-phase collision detection using the spacial partition
-	std::vector<AABB*> potentialCollisions = mSpacialPartition->GetPotentialCollisions(object);
+	std::vector<AABB*> potentialCollisions = mSpacialPartition->Retrieve(object);
 
 
 	// perform narrow-phase collision detection

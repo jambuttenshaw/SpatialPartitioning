@@ -7,36 +7,31 @@
 class SpatialHashTable : public SpatialPartition
 {
 public:
-	SpatialHashTable() = default;
+	SpatialHashTable(const AABB& worldBounds);
 	virtual ~SpatialHashTable() = default;
-
-	virtual std::vector<AABB*> GetPotentialCollisions(const AABB& object) override;
 
 	virtual void Insert(AABB* object) override;
 	virtual void Delete(AABB* object) override;
 
-	virtual void UpdateColliderInPartition(AABB* object) override;
+	virtual std::vector<AABB*> Retrieve(const AABB& bounds) override;
 
 private:
 
-	Vector2 GetGridCell(Vector2 position);
-	size_t GetIndex(Vector2 gridCell);
-
-	bool CheckTableRequiresResize();
-	void ResizeTable();
+	size_t GetIndex(Vector2 position);
 
 private:
 	// the hash table data structure
 	// a container to contain the buckets
 	std::vector<std::list<AABB*>> mTable;
 
+	// the size of each cell in the grid
+	// all cells in the grid are square, so it need only be represented by a single float
+	const float mCellSize = 4.0f;
+	unsigned int mCellsX = 0, mCellsY = 0;
+
 	// the number of buckets that have at least one collider in them
 	size_t mCount = 0;
 	// the total number of colliders in the spatial partition
 	// NOTE: a collider can appear in multiple buckets, which his value does not take into account
 	size_t mColliderCount = 0;
-
-	// the threshold load factor at which the table should be resized
-	// eg: 0.8 means when the table is 80% full, make it bigger to reduce chance of collisions
-	const float mThresholdLoadFactor = 0.8f;
 };
