@@ -28,7 +28,7 @@ ColliderID CollisionWorld::CreateAABB(const AABB& aabb)
 	mObjects.push_back(aabb);
 
 	// insert this object into the spacial partition
-	mSpacialPartition->Insert(newID);
+	mSpacialPartition->Insert(newID, aabb);
 
 	// increment the available id
 	mNextID++;
@@ -42,7 +42,7 @@ void CollisionWorld::DeleteAABB(ColliderID id)
 	assert(mIDToIndex.find(id) != mIDToIndex.end());
 
 	// tell the spatial partitioning system the object has been deleted
-	mSpacialPartition->Delete(id);
+	mSpacialPartition->Delete(id, Get(id));
 
 	// to retain density in the vector, we will move the last element in the vector
 	// into the space of the object were about to delete
@@ -107,7 +107,8 @@ std::vector<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 	const AABB& object = Get(id);
 	
 	// perform broad-phase collision detection using the spacial partition
-	std::vector<ColliderID> potentialCollisions = mSpacialPartition->Retrieve(object);
+	std::vector<ColliderID> potentialCollisions;
+	mSpacialPartition->Retrieve(potentialCollisions, object);
 
 
 	// perform narrow-phase collision detection

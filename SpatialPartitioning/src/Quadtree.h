@@ -15,22 +15,28 @@ public:
 	Quadtree(const AABB& bounds);
 	virtual ~Quadtree() = default;
 
-	virtual void Insert(ColliderID object) override;
-	virtual void Delete(ColliderID object) override;
+	virtual void Insert(ColliderID object, const AABB& bounds) override;
+	virtual void Delete(ColliderID object, const AABB& bounds) override;
 
-	virtual std::vector<ColliderID> Retrieve(const AABB& bounds) override;
+	virtual void Retrieve(std::vector<ColliderID>& out, const AABB& bounds) override;
 
 private:
 
-	inline void SetLevel(int level) { mLevel = level; }
+	// split this node into 4 subnodes
+	void Split();
+	// get the quadrant a particular bounds would lie in
+	// note: a signed type is used as the return value of -1 means that the bounds does not completely lie inside a quadrant
+	int GetIndex(const AABB& bounds);
 
 private:
 	
-	// the level this partition is located on
-	int mLevel = 0;
 	// objects inside this partition
 	std::forward_list<ColliderID> mObjects;
+	size_t mObjectCount = 0;
 	
 	// the subtrees of this node
 	std::array<Quadtree*, 4> mChildren;
+
+private:
+	static inline constexpr size_t NODE_CAPACITY = 5;
 };

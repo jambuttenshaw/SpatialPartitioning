@@ -10,10 +10,10 @@ public:
 	SpatialHashTable(const AABB& worldBounds);
 	virtual ~SpatialHashTable() = default;
 
-	virtual void Insert(ColliderID object) override;
-	virtual void Delete(ColliderID object) override;
+	virtual void Insert(ColliderID object, const AABB& bounds) override;
+	virtual void Delete(ColliderID object, const AABB& bounds) override;
 
-	virtual std::vector<ColliderID> Retrieve(const AABB& bounds) override;
+	virtual void Retrieve(std::vector<ColliderID>& out, const AABB& bounds) override;
 
 private:
 

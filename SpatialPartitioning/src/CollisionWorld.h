@@ -20,9 +20,7 @@ public:
 		static_assert(std::is_base_of<SpatialPartition, T>::value);
 
 		CollisionWorld* instance = new CollisionWorld{ worldBounds };
-
 		instance->mSpacialPartition = new T(worldBounds);
-		instance->mSpacialPartition->SetCollisionWorld(instance);
 
 		return instance;
 	}

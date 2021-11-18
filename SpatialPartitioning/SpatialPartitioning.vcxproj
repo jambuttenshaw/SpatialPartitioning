@@ -150,7 +150,6 @@
     <ClCompile Include="src\CollisionWorld.cpp" />
     <ClCompile Include="src\Quadtree.cpp" />
     <ClCompile Include="src\SpatialHashTable.cpp" />
-    <ClCompile Include="src\SpatialPartition.cpp" />
     <ClCompile Include="src\Utilities\AABB.cpp" />
     <ClCompile Include="src\Utilities\Instrumentor.cpp" />
     <ClCompile Include="src\Main.cpp" />

@@ -24,21 +24,11 @@ public:
 	* 
 	* GetAABBFromColliderID is a constant-time function, do not fear.
 	*/
-	virtual void Insert(ColliderID object) = 0;
-	virtual void Delete(ColliderID object) = 0;
+	virtual void Insert(ColliderID object, const AABB& objectBounds) = 0;
+	virtual void Delete(ColliderID object, const AABB& objectBounds) = 0;
 
-	virtual std::vector<ColliderID> Retrieve(const AABB& bounds) = 0;
-
-
-	// set up from collision world
-	void SetCollisionWorld(CollisionWorld* collisionWorld);
-
-protected:
-	const AABB& GetAABBFromColliderID(ColliderID id);
+	virtual void Retrieve(std::vector<ColliderID>& out, const AABB& bounds) = 0;
 
 protected:
 	AABB mWorldBounds;
-
-private:
-	CollisionWorld* mCollisionWorld = nullptr;
 };

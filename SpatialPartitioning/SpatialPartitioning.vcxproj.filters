@@ -30,9 +30,6 @@
     <ClCompile Include="src\SpatialHashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpatialPartition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Quadtree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
