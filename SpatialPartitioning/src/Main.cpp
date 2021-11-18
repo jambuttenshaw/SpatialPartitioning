@@ -1,9 +1,12 @@
 #include <vector>
 
-#include "Utilities/AABB.h"
-
+#include "CollisionWorld.h"
+#include "SpatialHashTable/SpatialHashTable.h"
 
 int main()
 {
-	std::vector<AABB> collisionWorld;
+	AABB worldBounds{ {0, 0}, {2, 2} };
+	CollisionWorld* collisionWorld = CollisionWorld::Create<SpatialHashTable>(worldBounds);
+
+	delete collisionWorld;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 #include <type_traits>
 
 #include "Utilities/Constants.h"
@@ -12,20 +13,25 @@
 class CollisionWorld
 {
 public:
-	template<typename T>
-	CollisionWorld(const AABB& worldBounds)
-		: mWorldBounds(worldBounds)
+	template <typename T>
+	static CollisionWorld* Create(const AABB& worldBounds)
 	{
 		// the spatial partitioning system must inherit from SpatialPartition
 		static_assert(std::is_base_of<SpatialPartition, T>::value);
 
-		mSpacialPartition = new T(mWorldBounds);
-		mSpacialPartition->SetCollisionWorld(this);
+		CollisionWorld* instance = new CollisionWorld{ worldBounds };
+
+		instance->mSpacialPartition = new T(worldBounds);
+		instance->mSpacialPartition->SetCollisionWorld(instance);
+
+		return instance;
 	}
-	~CollisionWorld()
-	{
-		delete mSpacialPartition;
-	}
+
+private:
+	CollisionWorld(const AABB& worldBounds);
+		
+public:
+	~CollisionWorld();
 
 
 	ColliderID CreateAABB(const AABB& aabb);
@@ -44,6 +50,10 @@ public:
 private:
 	std::vector<AABB> mObjects;
 	SpatialPartition* mSpacialPartition = nullptr;
+
+	std::unordered_map<ColliderID, size_t> mIDToIndex;
+	std::unordered_map<size_t, ColliderID> mIndexToID;
+	ColliderID mNextID = ColliderID();
 
 	AABB mWorldBounds;
 };
