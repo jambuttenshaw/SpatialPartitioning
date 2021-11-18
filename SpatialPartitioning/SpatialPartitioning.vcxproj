@@ -148,7 +148,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\CollisionWorld.cpp" />
-    <ClCompile Include="src\SpatialHashTable\SpatialHashTable.cpp" />
+    <ClCompile Include="src\Quadtree.cpp" />
+    <ClCompile Include="src\SpatialHashTable.cpp" />
     <ClCompile Include="src\SpatialPartition.cpp" />
     <ClCompile Include="src\Utilities\AABB.cpp" />
     <ClCompile Include="src\Utilities\Instrumentor.cpp" />
@@ -156,7 +157,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CollisionWorld.h" />
-    <ClInclude Include="src\SpatialHashTable\SpatialHashTable.h" />
+    <ClInclude Include="src\Quadtree.h" />
+    <ClInclude Include="src\SpatialHashTable.h" />
     <ClInclude Include="src\SpatialPartition.h" />
     <ClInclude Include="src\Utilities\AABB.h" />
     <ClInclude Include="src\Utilities\Constants.h" />

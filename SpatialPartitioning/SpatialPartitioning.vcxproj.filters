@@ -27,10 +27,13 @@
     <ClCompile Include="src\CollisionWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpatialHashTable\SpatialHashTable.cpp">
+    <ClCompile Include="src\SpatialHashTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SpatialPartition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Quadtree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +53,13 @@
     <ClInclude Include="src\CollisionWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpatialHashTable\SpatialHashTable.h">
+    <ClInclude Include="src\SpatialHashTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utilities\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Quadtree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
