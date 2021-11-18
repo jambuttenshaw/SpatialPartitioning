@@ -5,24 +5,24 @@
 class AxisAlignedBoundingBox
 {
 public:
-	AxisAlignedBoundingBox(float x, float y, float width, float height) : mCentre(x, y), mSize(width, height) {}
-	AxisAlignedBoundingBox(const Vector2f& centre, const Vector2f& size) : mCentre(centre), mSize(size) {}
+	AxisAlignedBoundingBox(float x, float y, float width, float height) : mPosition(x, y), mSize(width, height) {}
+	AxisAlignedBoundingBox(const Vector2f& topleft, const Vector2f& size) : mPosition(topleft), mSize(size) {}
 
-	inline const Vector2f& Centre() const { return mCentre; }
+	inline const Vector2f& TopLeft() const { return mPosition; }
+	Vector2f Centre() const;
 	inline const Vector2f& Size() const { return mSize; }
-	Vector2f TopLeft() const;
 
 	inline void Resize(const Vector2f& size) { mSize = size; }
 	
-	inline void SetPosition(const Vector2f& pos) { mCentre = pos; }
-	inline void Translate(const Vector2f& translation) { mCentre += translation; }
+	inline void SetPosition(const Vector2f& pos) { mPosition = pos; }
+	inline void Translate(const Vector2f& translation) { mPosition += translation; }
 
 	// Intersection checks
 	bool Contains(const Vector2f& point) const;
 	bool Intersects(const AxisAlignedBoundingBox& other) const;
 
 private:
-	Vector2f mCentre, mSize;
+	Vector2f mPosition, mSize;
 };
 
 typedef AxisAlignedBoundingBox AABB;

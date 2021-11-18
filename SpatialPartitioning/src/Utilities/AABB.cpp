@@ -1,24 +1,18 @@
 #include "AABB.h"
 
-Vector2f AxisAlignedBoundingBox::TopLeft() const
+Vector2f AxisAlignedBoundingBox::Centre() const
 {
-    return mCentre - (0.5f * mSize);
+    return mPosition - (0.5f * mSize);
 }
 
 bool AxisAlignedBoundingBox::Contains(const Vector2f& point) const
 {
-    Vector2f topleft = TopLeft();
-    return  (point.x > topleft.x && point.x < topleft.x + mSize.x) &&
-            (point.y > topleft.y && point.y < topleft.y + mSize.y);
+    return  (point.x > mPosition.x && point.x < mPosition.x + mSize.x) &&
+            (point.y > mPosition.y && point.y < mPosition.y + mSize.y);
 }
 
 bool AxisAlignedBoundingBox::Intersects(const AxisAlignedBoundingBox& other) const
 {
-    Vector2f topleft = TopLeft();
- 
-    Vector2f otherTopleft = other.TopLeft();
-    Vector2f otherSize = other.Size();
-
-    return (otherTopleft.x < topleft.x + mSize.x || topleft.y < otherTopleft.x + otherSize.x) &&
-        (otherTopleft.y < topleft.y + mSize.y || topleft.y < otherTopleft.y + otherSize.y);
+    return (other.mPosition.x < mPosition.x + mSize.x || mPosition.x < other.mPosition.x + other.mSize.x) &&
+           (other.mPosition.y < mPosition.y + mSize.y || mPosition.y < other.mPosition.y + other.mSize.y);
 }
