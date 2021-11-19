@@ -21,6 +21,8 @@ int main()
 			ids[(x * 5) + y] = CollisionWorld::Instance()->AddAABB({ 4.0f * x + 2.0f, 4.0f * y + 2.0f, 0.1f, 0.1f });
 	}
 
+	assert(CollisionWorld::Instance()->GetCollisions(ids[1]).size() == 1);
+
 	for (int i = 0; i < 25; i++)
 		CollisionWorld::Instance()->DeleteAABB(ids[i]);
 }
