@@ -8,6 +8,10 @@ CollisionWorld::~CollisionWorld()
 
 ColliderID CollisionWorld::AddAABB(const AABB& aabb)
 {
+	// make sure the AABB is entirely inside the world
+	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
+	assert((mWorldBounds.Contains(aabb)) && "AABB is outside of the world!");
+
 	// TODO: add check to make sure we havent reached max colliders yet
 
 	// get the next available ID for a collider

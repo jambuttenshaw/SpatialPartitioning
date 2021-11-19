@@ -18,6 +18,10 @@ bool AxisAlignedBoundingBox::Contains(const AxisAlignedBoundingBox& aabb) const
 
 bool AxisAlignedBoundingBox::Intersects(const AxisAlignedBoundingBox& other) const
 {
-    return (other.mPosition.x < mPosition.x + mSize.x || mPosition.x < other.mPosition.x + other.mSize.x) &&
-           (other.mPosition.y < mPosition.y + mSize.y || mPosition.y < other.mPosition.y + other.mSize.y);
+    if (mPosition.x + mSize.x < other.mPosition.x) return false;
+    if (mPosition.x > other.mPosition.x + other.mSize.x) return false;
+    if (mPosition.y + mSize.y < other.mPosition.y) return false;
+    if (mPosition.y > other.mPosition.y + other.mSize.y) return false;
+
+    return true;
 }

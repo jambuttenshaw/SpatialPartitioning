@@ -4,7 +4,7 @@
 #include "Utilities/AABB.h"
 
 #include <array>
-#include <list>
+#include <forward_list>
 
 class Quadtree : public SpatialPartition
 {
@@ -31,7 +31,7 @@ private:
 private:
 	
 	// objects inside this partition
-	std::list<ColliderID> mObjects;
+	std::forward_list<ColliderID> mObjects;
 	size_t mObjectCount = 0;
 	
 	// the subtrees of this node

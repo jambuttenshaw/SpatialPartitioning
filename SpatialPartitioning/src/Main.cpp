@@ -18,7 +18,7 @@ int main()
 	for (int x = 0; x < 5; x++)
 	{
 		for (int y = 0; y < 5; y++)
-			ids[(x * 5) + y] = CollisionWorld::Instance()->AddAABB({ (4.0f * x) - 8.0f, (4.0f * x) - 8.0f, 0.1f, 0.1f });
+			ids[(x * 5) + y] = CollisionWorld::Instance()->AddAABB({ 4.0f * x + 2.0f, 4.0f * y + 2.0f, 0.1f, 0.1f });
 	}
 
 	for (int i = 0; i < 25; i++)

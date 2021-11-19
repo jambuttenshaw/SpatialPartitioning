@@ -19,9 +19,7 @@ void SpatialHashTable::Insert(ColliderID object, const AABB& bounds)
 {
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
-	assert((mWorldBounds.Contains(bounds.TopLeft()) &&
-		mWorldBounds.Contains(bounds.TopLeft() + bounds.Size()))
-		&& "AABB is outside of the world!");
+	assert((mWorldBounds.Contains(bounds)) && "AABB is outside of the world!");
 
 
 	// get the grid index of the topleft and bottom right of the object

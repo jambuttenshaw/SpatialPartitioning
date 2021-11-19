@@ -10,46 +10,41 @@ Quadtree::Quadtree(const AABB& bounds)
 
 void Quadtree::Insert(ColliderID object, const AABB& bounds)
 {
-	if (!mWorldBounds.Contains(bounds))
+	// does this bounds intersect with this node?
+	if (!mWorldBounds.Intersects(bounds))
+		// the input does not intersect with this node
+		// it has no place here
 		return;
 
-	if (mChildren[0] != nullptr)
+	// has this node split yet?
+	if (mChildren[0] == nullptr)
 	{
-		// this node has split
-		int index = GetIndex(bounds);
-		if (index != -1)
-			mChildren[index]->Insert(object, bounds);
-	}
+		// the node has not split
+		// insert the object into this node
+		mObjects.push_front(object);
+		mObjectCount++;
 
-	mObjects.push_front(object);
-	mObjectCount++;
-
-	if (mObjectCount > NODE_CAPACITY)
-	{
-		if (mChildren[0] == nullptr)
-			Split();
-
-		auto it = mObjects.begin();
-		while (it != mObjects.end())
+		// should this object now split?
+		if (mObjectCount > NODE_CAPACITY)
 		{
-			const AABB& childBouns = CollisionWorld::Instance()->Get(*it);
-			int index = GetIndex(childBouns);
-
-			if (index != -1)
-			{
-				mChildren[index]->Insert(*it, CollisionWorld::Instance()->Get(*it));
-				// remove object from this nodes objects, as it will belong to its children
-				it = mObjects.erase(it);
-				mObjectCount--;
-			}
-			else
-				it++;
+			// split the node
+			Split();
 		}
+	}
+	else
+	{
+		// the node has split
+		// insert input into children
+		// note that one bounds may exist in multiple children,
+		// this is the case when a bounds exists on the boundary between nodes
+		for (auto& child : mChildren) child->Insert(object, bounds);
 	}
 }
 
 void Quadtree::Delete(ColliderID object, const AABB& bounds)
 {
+	// needs rewrite: once split a node does not store any objects
+	assert(false);
 	if (mChildren[0] != nullptr)
 	{
 		int index = GetIndex(bounds);
@@ -80,10 +75,24 @@ void Quadtree::Split()
 	mChildren[1] = new Quadtree({ x + w, y + h, w, h }); // SE
 	mChildren[2] = new Quadtree({ x,     y + h, w, h }); // SW
 	mChildren[3] = new Quadtree({ x,     y,     w, h }); // NW
+
+	// go through objects in this node and insert them into children
+	for (auto& object : mObjects)
+	{
+		const auto& bounds = CollisionWorld::Instance()->Get(object);
+		for (auto& child : mChildren) child->Insert(object, bounds);
+	}
+	// now that all the objects exist in the children, we can remove them from this node
+	mObjects.clear();
+	mObjectCount = 0;
 }
 
 int Quadtree::GetIndex(const AABB& bounds)
 {
+	// get rid of this function
+	assert(false);
+
+
 	// the object can completely fit in the top half of the space 
 	// if the bottom of the bounds is higher than the midpoint of this node
 	bool topHalf = bounds.TopLeft().y + bounds.Size().y < mWorldBounds.Centre().y;
