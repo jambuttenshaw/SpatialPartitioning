@@ -39,7 +39,7 @@ public:
 	}
 	inline void SetWorldBounds(const AABB& worldBounds)	{ mWorldBounds = worldBounds; }
 
-	ColliderID CreateAABB(const AABB& aabb);
+	ColliderID AddAABB(const AABB& aabb);
 	void DeleteAABB(ColliderID id);
 	
 	void Translate(ColliderID id, const Vector2f& translation);

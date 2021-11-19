@@ -20,6 +20,7 @@ public:
 
 	// Intersection checks
 	bool Contains(const Vector2f& point) const;
+	bool Contains(const AxisAlignedBoundingBox& aabb) const;
 	bool Intersects(const AxisAlignedBoundingBox& other) const;
 
 private:

@@ -11,6 +11,11 @@ bool AxisAlignedBoundingBox::Contains(const Vector2f& point) const
             (point.y > mPosition.y && point.y < mPosition.y + mSize.y);
 }
 
+bool AxisAlignedBoundingBox::Contains(const AxisAlignedBoundingBox& aabb) const
+{
+    return Contains(aabb.TopLeft()) && Contains(aabb.TopLeft() + aabb.Size());
+}
+
 bool AxisAlignedBoundingBox::Intersects(const AxisAlignedBoundingBox& other) const
 {
     return (other.mPosition.x < mPosition.x + mSize.x || mPosition.x < other.mPosition.x + other.mSize.x) &&

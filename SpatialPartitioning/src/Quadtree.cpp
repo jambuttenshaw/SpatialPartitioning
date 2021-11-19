@@ -10,6 +10,9 @@ Quadtree::Quadtree(const AABB& bounds)
 
 void Quadtree::Insert(ColliderID object, const AABB& bounds)
 {
+	if (!mWorldBounds.Contains(bounds))
+		return;
+
 	if (mChildren[0] != nullptr)
 	{
 		// this node has split
@@ -32,24 +35,38 @@ void Quadtree::Insert(ColliderID object, const AABB& bounds)
 			const AABB& childBouns = CollisionWorld::Instance()->Get(*it);
 			int index = GetIndex(childBouns);
 
-			if (index == -1)
-			{
-				// dont do anything to this one, it doesn't get placed into a sub-node
-				it++;
-			}
-			else
+			if (index != -1)
 			{
 				mChildren[index]->Insert(*it, CollisionWorld::Instance()->Get(*it));
 				// remove object from this nodes objects, as it will belong to its children
 				it = mObjects.erase(it);
 				mObjectCount--;
 			}
+			else
+				it++;
 		}
 	}
 }
 
 void Quadtree::Delete(ColliderID object, const AABB& bounds)
 {
+	if (mChildren[0] != nullptr)
+	{
+		int index = GetIndex(bounds);
+
+		if (index == -1)
+		{
+			mObjects.remove(object);
+		}
+		else
+		{
+			mChildren[index]->Delete(object, bounds);
+		}
+	}
+	else
+	{
+		mObjects.remove(object);
+	}
 }
 
 void Quadtree::Split()

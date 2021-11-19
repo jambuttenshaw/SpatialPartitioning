@@ -6,7 +6,7 @@ CollisionWorld::~CollisionWorld()
 	delete mSpatialPartition;
 }
 
-ColliderID CollisionWorld::CreateAABB(const AABB& aabb)
+ColliderID CollisionWorld::AddAABB(const AABB& aabb)
 {
 	// TODO: add check to make sure we havent reached max colliders yet
 
