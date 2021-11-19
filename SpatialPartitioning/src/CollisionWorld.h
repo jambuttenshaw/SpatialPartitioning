@@ -57,6 +57,8 @@ public:
 
 	ColliderID AddAABB(const AABB& aabb);
 	void DeleteAABB(ColliderID id);
+
+	void Clear();
 	
 	void Translate(ColliderID id, const Vector2f& translation);
 	void SetPosition(ColliderID id, const Vector2f& position);

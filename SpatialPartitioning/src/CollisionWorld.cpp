@@ -3,7 +3,9 @@
 
 CollisionWorld::~CollisionWorld()
 {
-	delete mSpatialPartition;
+	// its possible the spatital partition may never be set
+	if (mSpatialPartition != nullptr)
+		delete mSpatialPartition;
 }
 
 void CollisionWorld::SetWorldBounds(const AABB& worldBounds)
@@ -67,6 +69,18 @@ void CollisionWorld::DeleteAABB(ColliderID id)
 
 	// remove the last item from the vector
 	mObjects.erase(mObjects.begin() + lastIndex);
+}
+
+void CollisionWorld::Clear()
+{
+	// Empty all collision geometry in the world and restart collider ID's
+	mSpatialPartition->Clear();
+
+	mObjects.clear();
+	mIDToIndex.clear();
+	mIndexToID.clear();
+
+	mNextID = ColliderID();
 }
 
 void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)

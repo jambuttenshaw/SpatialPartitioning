@@ -1,5 +1,6 @@
 #include <vector>
 
+#include "Utilities/Random.h"
 #include "CollisionWorld.h"
 #include "SpatialHashTable.h"
 #include "Quadtree.h"
@@ -9,20 +10,23 @@
 
 int main()
 {
+	Random::Init();
+
 	// set up the collision world
-	AABB worldBounds{ {0, 0}, {20, 20} };
+	AABB worldBounds{ {0, 0}, {100, 100} };
 	CollisionWorld::Instance()->SetWorldBounds(worldBounds);
 	CollisionWorld::Instance()->SetSpatialPartitioner<Quadtree>();
 
-	ColliderID ids[25];
-	for (int x = 0; x < 5; x++)
+	// place 300 colliders into the world
+	const size_t colliderCount = 300;
+	for (size_t i = 0; i < colliderCount; i++)
 	{
-		for (int y = 0; y < 5; y++)
-			ids[(x * 5) + y] = CollisionWorld::Instance()->AddAABB({ 4.0f * x + 2.0f, 4.0f * y + 2.0f, 0.1f, 0.1f });
+		Vector2 newSize = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.Size() * 0.1f);
+		Vector2 newPosition = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
+		CollisionWorld::Instance()->AddAABB({ newPosition, newSize });
 	}
 
-	assert(CollisionWorld::Instance()->GetCollisions(ids[1]).size() == 1);
+	CollisionWorld::Instance()->Clear();
 
-	for (int i = 0; i < 25; i++)
-		CollisionWorld::Instance()->DeleteAABB(ids[i]);
+	Random::Shutdown();
 }

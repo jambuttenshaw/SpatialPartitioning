@@ -6,8 +6,8 @@ std::uniform_real_distribution<float> Random::s_NormamlizedFloatDistribution(0, 
 
 void Random::Init()
 {
-	std::random_device rd();
-	s_RandomNumberGenerator = new std::mt19937(rd);
+	std::random_device rd;
+	s_RandomNumberGenerator = new std::mt19937(rd());
 }
 
 void Random::Shutdown()
