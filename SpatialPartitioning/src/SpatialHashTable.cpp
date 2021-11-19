@@ -66,6 +66,12 @@ void SpatialHashTable::Delete(ColliderID object, const AABB& bounds)
 	}
 }
 
+void SpatialHashTable::Clear()
+{
+	// empty the table
+	mTable.clear();
+}
+
 void SpatialHashTable::Retrieve(std::vector<ColliderID>& out, const AABB& bounds)
 {
 	// make sure the AABB is entirely inside the world

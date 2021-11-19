@@ -30,14 +30,30 @@ public:
 	template<typename T>
 	void SetSpatialPartitioner()
 	{
-		assert(mSpatialPartition == nullptr && "Spatial partitioner already exists!");
-
 		// the spatial partitioning system must inherit from SpatialPartition
 		static_assert(std::is_base_of<SpatialPartition, T>::value);
+		// the world size must be set before creating a spatial partition
 		assert((mWorldBounds.Size() != Vector2f::Zero) && "Initialize world size before partitioning!");
-		mSpatialPartition = new T(mWorldBounds);
+
+		if (mSpatialPartition == nullptr)
+		{
+			mSpatialPartition = new T(mWorldBounds);
+		}
+		else
+		{
+			// delete the old spatial partition
+			delete mSpatialPartition;
+			// create new one
+			mSpatialPartition = new T(mWorldBounds);
+
+			// insert all geometry in the collision world into the new partition
+			for (const auto& collider : mIDToIndex)
+			{
+				mSpatialPartition->Insert(collider.first, mObjects[collider.second]);
+			}
+		}
 	}
-	inline void SetWorldBounds(const AABB& worldBounds)	{ mWorldBounds = worldBounds; }
+	void SetWorldBounds(const AABB& worldBounds);
 
 	ColliderID AddAABB(const AABB& aabb);
 	void DeleteAABB(ColliderID id);

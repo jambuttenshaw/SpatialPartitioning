@@ -6,6 +6,12 @@ CollisionWorld::~CollisionWorld()
 	delete mSpatialPartition;
 }
 
+void CollisionWorld::SetWorldBounds(const AABB& worldBounds)
+{
+	assert((mSpatialPartition == nullptr) && "Cannot modify world size after creating spatial partition!");
+	mWorldBounds = worldBounds;
+}
+
 ColliderID CollisionWorld::AddAABB(const AABB& aabb)
 {
 	// make sure the AABB is entirely inside the world

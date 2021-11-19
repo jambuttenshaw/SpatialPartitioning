@@ -8,6 +8,11 @@ Quadtree::Quadtree(const AABB& bounds)
 {
 }
 
+Quadtree::~Quadtree()
+{
+	for (auto& child : mChildren) delete child;
+}
+
 void Quadtree::Insert(ColliderID object, const AABB& bounds)
 {
 	// does this bounds intersect with this node?
@@ -57,6 +62,21 @@ void Quadtree::Delete(ColliderID object, const AABB& bounds)
 	else
 	{
 		for (auto& child : mChildren) child->Delete(object, bounds);
+	}
+}
+
+void Quadtree::Clear()
+{
+	mObjects.clear();
+	mObjectCount = 0;
+	if (mChildren[0] != nullptr)
+	{
+		// destroy children
+		for (auto& child : mChildren)
+		{
+			delete child;
+			child = nullptr;
+		}
 	}
 }
 
