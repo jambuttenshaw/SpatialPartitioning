@@ -136,10 +136,14 @@ std::vector<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 
 	for (auto potentialCollisionID : potentialCollisions)
 	{
-		const AABB& potentialCollision = Get(potentialCollisionID);
+		// make sure were not comparing an object with itself
+		if (potentialCollisionID != id)
+		{
+			const AABB& potentialCollision = Get(potentialCollisionID);
 
-		if (object.Intersects(potentialCollision))
-			collisions.push_back(potentialCollisionID);
+			if (object.Intersects(potentialCollision))
+				collisions.push_back(potentialCollisionID);
+		}
 	}
 	collisions.shrink_to_fit();
 	return collisions;

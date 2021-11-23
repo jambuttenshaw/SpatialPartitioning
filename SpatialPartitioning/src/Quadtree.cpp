@@ -8,6 +8,12 @@ Quadtree::Quadtree(const AABB& bounds)
 {
 }
 
+Quadtree::Quadtree(const AABB& bounds, size_t level)
+	: Quadtree(bounds)
+{
+	mLevel = level;
+}
+
 Quadtree::~Quadtree()
 {
 	for (auto& child : mChildren) delete child;
@@ -30,7 +36,7 @@ void Quadtree::Insert(ColliderID object, const AABB& bounds)
 		mObjectCount++;
 
 		// should this object now split?
-		if (mObjectCount > NODE_CAPACITY)
+		if (mObjectCount > NODE_CAPACITY && mLevel < MAX_LEVELS)
 		{
 			// split the node
 			Split();
@@ -87,10 +93,10 @@ void Quadtree::Split()
 	float x = mWorldBounds.TopLeft().x;
 	float y = mWorldBounds.TopLeft().y;
 
-	mChildren[0] = new Quadtree({ x + w, y,     w, h }); // NE
-	mChildren[1] = new Quadtree({ x + w, y + h, w, h }); // SE
-	mChildren[2] = new Quadtree({ x,     y + h, w, h }); // SW
-	mChildren[3] = new Quadtree({ x,     y,     w, h }); // NW
+	mChildren[0] = new Quadtree({ x + w, y,     w, h }, mLevel + 1); // NE
+	mChildren[1] = new Quadtree({ x + w, y + h, w, h }, mLevel + 1); // SE
+	mChildren[2] = new Quadtree({ x,     y + h, w, h }, mLevel + 1); // SW
+	mChildren[3] = new Quadtree({ x,     y,     w, h }, mLevel + 1); // NW
 
 	// go through objects in this node and insert them into children
 	for (auto& object : mObjects)

@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-using DurationType = std::chrono::milliseconds;
+using DurationType = std::chrono::microseconds;
 
 
 struct InstrumentorResult
@@ -61,7 +61,7 @@ private:
 
 
 // Instrumentor macros
-#define ENABLE_PROFILE 0
+#define ENABLE_PROFILE 1
 #if ENABLE_PROFILE
 
 	#define BEGIN_PROFILE_SESSION(name, filepath, append) Instrumentor::Get()->BeginSession(name, filepath, append);
