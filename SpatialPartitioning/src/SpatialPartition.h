@@ -3,7 +3,7 @@
 #include "Utilities/Constants.h"
 #include "Utilities/AABB.h"
 
-#include <vector>
+#include <set>
 #include <memory>
 
 // forward-declare to avoid circular dependencies
@@ -31,7 +31,7 @@ public:
 	virtual void Clear() = 0;
 
 	// Populate the vector 'out' with all ColliderID's that could potentitall collide with the input bounds 'bounds'
-	virtual void Retrieve(std::vector<ColliderID>& out, const AABB& bounds) = 0;
+	virtual void Retrieve(std::set<ColliderID>& out, const AABB& bounds) = 0;
 
 protected:
 	AABB mWorldBounds;

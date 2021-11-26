@@ -33,7 +33,6 @@ int main()
 	size_t collisionCount = 0;
 	for (size_t i = 0; i < colliderCount; i++)
 	{
-		//PROFILE_SCOPE("GET COLLISIONS");
 		collisionCount += CollisionWorld::Instance()->GetCollisions(ids[i]).size();
 	}
 

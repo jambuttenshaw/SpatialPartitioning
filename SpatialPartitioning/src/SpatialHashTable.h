@@ -2,6 +2,7 @@
 
 #include "SpatialPartition.h"
 
+#include <vector>
 #include <forward_list>
 
 class SpatialHashTable : public SpatialPartition
@@ -15,7 +16,7 @@ public:
 
 	virtual void Clear() override;
 
-	virtual void Retrieve(std::vector<ColliderID>& out, const AABB& bounds) override;
+	virtual void Retrieve(std::set<ColliderID>& out, const AABB& bounds) override;
 
 private:
 

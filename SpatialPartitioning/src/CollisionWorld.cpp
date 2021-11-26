@@ -125,7 +125,7 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 	const AABB& object = Get(id);
 	
 	// perform broad-phase collision detection using the spacial partition
-	std::vector<ColliderID> potentialCollisions;
+	std::set<ColliderID> potentialCollisions;
 	mSpatialPartition->Retrieve(potentialCollisions, object);
 
 

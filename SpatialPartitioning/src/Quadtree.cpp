@@ -110,7 +110,7 @@ void Quadtree::Split()
 }
 
 
-void Quadtree::Retrieve(std::vector<ColliderID>& out, const AABB& bounds)
+void Quadtree::Retrieve(std::set<ColliderID>& out, const AABB& bounds)
 {
 	if (!mWorldBounds.Intersects(bounds))
 	{
@@ -126,7 +126,7 @@ void Quadtree::Retrieve(std::vector<ColliderID>& out, const AABB& bounds)
 	{
 		// there are no children, this is a leaf of the quadtree
 		// add any objects in this node
-		out.insert(out.end(), mObjects.begin(), mObjects.end());
+		out.insert(mObjects.begin(), mObjects.end());
 	}
 	else
 	{

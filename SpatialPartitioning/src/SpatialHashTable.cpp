@@ -74,7 +74,7 @@ void SpatialHashTable::Clear()
 	mTable.resize(mCellsX * mCellsY);
 }
 
-void SpatialHashTable::Retrieve(std::vector<ColliderID>& out, const AABB& bounds)
+void SpatialHashTable::Retrieve(std::set<ColliderID>& out, const AABB& bounds)
 {
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
@@ -93,7 +93,7 @@ void SpatialHashTable::Retrieve(std::vector<ColliderID>& out, const AABB& bounds
 		{
 			// add everything in this cell to the potential collisions
 			auto& bucket = mTable[GetIndex({ x, y })];
-			out.insert(out.end(), bucket.begin(), bucket.end());
+			out.insert(bucket.begin(), bucket.end());
 		}
 	}
 }
