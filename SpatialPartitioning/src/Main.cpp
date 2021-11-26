@@ -10,17 +10,13 @@
 #include <cassert>
 
 
-int main()
+AABB worldBounds{ {0, 0}, {100, 100} };
+
+
+void OneIteration()
 {
-	Random::Init();
-
-	// set up the collision world
-	AABB worldBounds{ {0, 0}, {100, 100} };
-	CollisionWorld::Instance()->SetWorldBounds(worldBounds);
-	CollisionWorld::Instance()->SetSpatialPartitioner<SpatialHashTable>();
-
 	// place 300 colliders into the world
-	const size_t colliderCount = 300;
+	const size_t colliderCount = 1000;
 	ColliderID ids[colliderCount];
 	for (size_t i = 0; i < colliderCount; i++)
 	{
@@ -31,17 +27,35 @@ int main()
 	}
 
 	size_t collisionCount = 0;
-	for (size_t i = 0; i < colliderCount; i++)
 	{
-		collisionCount += CollisionWorld::Instance()->GetCollisions(ids[i]).size();
+		PROFILE_SCOPE("SingleIteration");
+		for (size_t i = 0; i < colliderCount; i++)
+		{
+			collisionCount += CollisionWorld::Instance()->GetCollisions(ids[i]).size();
+		}
 	}
-
-	// collision pairs will be counted twice
-	// collision count should be an even number
-
 	std::cout << "Number of collisions found: " << collisionCount << std::endl;
 
 	CollisionWorld::Instance()->Clear();
+}
+
+
+int main()
+{
+	Random::Init();
+	BEGIN_PROFILE_SESSION("Quadtree", "Quadtree.csv", false);
+
+	// set up the collision world
+	CollisionWorld::Instance()->SetWorldBounds(worldBounds);
+	CollisionWorld::Instance()->SetSpatialPartitioner<Quadtree>();
+	
+
+	const size_t numIterations = 100;
+	for (size_t i = 0; i < numIterations; i++)
+	{
+		OneIteration();
+	}
+
 
 	Random::Shutdown();
 }

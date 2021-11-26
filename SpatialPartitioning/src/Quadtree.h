@@ -44,6 +44,6 @@ private:
 	size_t mLevel = 0;
 
 private:
-	static inline constexpr size_t NODE_CAPACITY = 5;
-	static inline constexpr size_t MAX_LEVELS = 10;
+	static inline constexpr size_t NODE_CAPACITY = 25;
+	static inline constexpr size_t MAX_LEVELS = 3;
 };

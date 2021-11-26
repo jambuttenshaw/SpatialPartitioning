@@ -2,6 +2,6 @@
 **.vcxproj.filters
 **.vcxproj.user
 **.lnk
-Debug/
-SpatialPartitioning/Debug/
+x64/
+SpatialPartitioning/x64/
 **.csv

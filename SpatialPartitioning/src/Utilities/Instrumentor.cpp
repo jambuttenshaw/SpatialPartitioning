@@ -1,9 +1,5 @@
 #include "Instrumentor.h"
 
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-
 
 Instrumentor::~Instrumentor()
 {
@@ -20,7 +16,7 @@ void Instrumentor::BeginSession(const std::string& name, const std::string& file
 	if (!mOutputStream.good())
 	{
 		std::cout << "Error: Failed to open output file: " << filepath << std::endl;
-		return;
+		std::abort();
 	}
 
 	// Write header
@@ -35,6 +31,13 @@ void Instrumentor::EndSession()
 {
 	if (!mSessionOpen) return;
 
+	// write all averages that the instrumentor has been keeping track of to file
+	for (const auto& average : mAverages)
+	{
+		double averageValue = average.second.first / static_cast<double>(average.second.second);
+		WriteData(average.first, averageValue);
+	}
+
 	// Close file
 	mOutputStream.close();
 	mSessionOpen = false;
@@ -42,19 +45,22 @@ void Instrumentor::EndSession()
 
 void Instrumentor::WriteResult(const InstrumentorResult& result)
 {
-	if (!mSessionOpen)
-	{
-		std::cout << "Error: No session active" << std::endl;
-		return;
-	}
+	WriteData(result.Name, result.Duration.count());
+}
 
-	// Write result in csv format
-	std::stringstream resultString;
-	resultString << std::setprecision(3) << std::fixed;
-	resultString << result.Name << "," << result.Duration.count() << "\n";
-	
-	mOutputStream << resultString.str();
-	mOutputStream.flush();
+void Instrumentor::TrackAverageValue(const std::string& name, double value)
+{
+	if (mAverages.find(name) == mAverages.end())
+	{
+		auto data = std::make_pair(value, size_t(1));
+		mAverages.insert(std::make_pair(name, data));
+	}
+	else
+	{
+		auto& data = mAverages[name];
+		data.first += value;
+		data.second++;
+	}
 }
 
 Instrumentor* Instrumentor::Get()

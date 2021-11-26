@@ -46,12 +46,12 @@ public:
 			delete mSpatialPartition;
 			// create new one
 			mSpatialPartition = new T(mWorldBounds);
-
-			// insert all geometry in the collision world into the new partition
-			for (const auto& collider : mIDToIndex)
-			{
-				mSpatialPartition->Insert(collider.first, mObjects[collider.second]);
-			}
+		}
+		
+		// insert all geometry in the collision world into the new partition
+		for (const auto& collider : mIDToIndex)
+		{
+			mSpatialPartition->Insert(collider.first, mObjects[collider.second]);
 		}
 	}
 	void SetWorldBounds(const AABB& worldBounds);
@@ -69,6 +69,7 @@ public:
 	const AABB& Get(ColliderID id);
 
 	std::set<ColliderID> GetCollisions(ColliderID id);
+	std::set<ColliderID> GetCollisionsBruteForce(ColliderID id);
 
 private:
 	// only allow AABB's to be directly modified from within this class

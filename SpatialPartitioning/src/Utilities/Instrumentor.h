@@ -3,6 +3,10 @@
 #include <chrono>
 #include <string>
 #include <fstream>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <unordered_map>
 
 
 using DurationType = std::chrono::microseconds;
@@ -28,6 +32,25 @@ public:
 	void EndSession();
 
 	void WriteResult(const InstrumentorResult& result);
+	template<typename T>
+	void WriteData(std::string label, T data)
+	{
+		if (!mSessionOpen)
+		{
+			std::cout << "Error: No session active" << std::endl;
+			return;
+		}
+
+		// Write result in csv format
+		std::stringstream resultString;
+		resultString << std::setprecision(3) << std::fixed;
+		resultString << label << "," << data << "\n";
+
+		mOutputStream << resultString.str();
+		mOutputStream.flush();
+	}
+
+	void TrackAverageValue(const std::string& name, double value);
 
 private:
 	Instrumentor() = default;
@@ -37,6 +60,8 @@ private:
 	bool mSessionOpen = false;
 
 	std::ofstream mOutputStream;
+
+	std::unordered_map<std::string, std::pair<double, size_t>> mAverages;
 
 public:
 	static Instrumentor* Get();
@@ -61,13 +86,15 @@ private:
 
 
 // Instrumentor macros
-#define ENABLE_PROFILE 1
-#if ENABLE_PROFILE
+#define ENABLE_INSTRUMENTOR 1
+#if ENABLE_INSTRUMENTOR
 
 	#define BEGIN_PROFILE_SESSION(name, filepath, append) Instrumentor::Get()->BeginSession(name, filepath, append);
 	#define END_PROFILE_SESSION() Instrumentor::Get()->EndSession();
 	#define PROFILE_SCOPE_LINE(name, line) InstrumentorTimer timer##line(name);
-	#define PROFILE_SCOPE(name)	PROFILE_SCOPE_LINE(name, __LINE__);
+	#define PROFILE_SCOPE(name)	PROFILE_SCOPE_LINE(name, __LINE__)
+
+	#define TRACK_AVERAGE(value) Instrumentor::Get()->TrackAverageValue(#value, static_cast<double>(value));
 
 #else
 
@@ -75,5 +102,7 @@ private:
 	#define END_PROFILE_SESSION()
 	#define PROFILE_SCOPE_LINE(name, line)
 	#define PROFILE_SCOPE(name)
+
+	#define TRACK_AVERAGE(value)
 
 #endif

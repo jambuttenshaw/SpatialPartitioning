@@ -1,5 +1,7 @@
 #include "CollisionWorld.h"
 
+#include "Utilities/Instrumentor.h"
+
 
 CollisionWorld::~CollisionWorld()
 {
@@ -34,7 +36,8 @@ ColliderID CollisionWorld::AddAABB(const AABB& aabb)
 	mObjects.push_back(aabb);
 
 	// insert this object into the spacial partition
-	mSpatialPartition->Insert(newID, aabb);
+	if (mSpatialPartition != nullptr)
+		mSpatialPartition->Insert(newID, aabb);
 
 	// increment the available id
 	mNextID++;
@@ -48,7 +51,8 @@ void CollisionWorld::DeleteAABB(ColliderID id)
 	assert(mIDToIndex.find(id) != mIDToIndex.end());
 
 	// tell the spatial partitioning system the object has been deleted
-	mSpatialPartition->Delete(id, Get(id));
+	if (mSpatialPartition != nullptr)
+		mSpatialPartition->Delete(id, Get(id));
 
 	// to retain density in the vector, we will move the last element in the vector
 	// into the space of the object were about to delete
@@ -74,7 +78,8 @@ void CollisionWorld::DeleteAABB(ColliderID id)
 void CollisionWorld::Clear()
 {
 	// Empty all collision geometry in the world and restart collider ID's
-	mSpatialPartition->Clear();
+	if (mSpatialPartition != nullptr)
+		mSpatialPartition->Clear();
 
 	mObjects.clear();
 	mIDToIndex.clear();
@@ -122,17 +127,20 @@ AABB& CollisionWorld::GetNonConst(ColliderID id)
 
 std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 {
+	if (mSpatialPartition == nullptr) return GetCollisionsBruteForce(id);
+
+
 	const AABB& object = Get(id);
 	
 	// perform broad-phase collision detection using the spacial partition
 	std::set<ColliderID> potentialCollisions;
 	mSpatialPartition->Retrieve(potentialCollisions, object);
 
+	size_t averageCollisionChecks = potentialCollisions.size();
+	TRACK_AVERAGE(averageCollisionChecks);
 
 	// perform narrow-phase collision detection
 	std::set<ColliderID> collisions;
-	// so that collisions will definitely only be resized once
-	//collisions.reserve(potentialCollisions.size());
 
 	for (auto potentialCollisionID : potentialCollisions)
 	{
@@ -144,7 +152,31 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 				collisions.insert(potentialCollisionID);
 		}
 	}
-	//collisions.shrink_to_fit();
+
+	return collisions;
+}
+
+/// <summary>
+///  No broad-phase collision detection, just test for intersection between each pair of colliders
+/// </summary>
+std::set<ColliderID> CollisionWorld::GetCollisionsBruteForce(ColliderID id)
+{
+	std::set<ColliderID> collisions;
+
+	const AABB& boundingBox = Get(id);
+	for (const auto& collider : mIDToIndex)
+	{
+		if (id == collider.first)
+			continue;
+
+		const AABB& otherBoundingBox = mObjects[collider.second];
+
+		if (boundingBox.Intersects(otherBoundingBox))
+		{
+			collisions.insert(collider.first);
+		}
+	}
+
 	return collisions;
 }
 
