@@ -8,64 +8,81 @@ Quadtree::Quadtree(const AABB& bounds)
 {
 }
 
+Quadtree::Quadtree(const AABB& bounds, size_t level)
+	: Quadtree(bounds)
+{
+	mLevel = level;
+}
+
+Quadtree::~Quadtree()
+{
+	for (auto& child : mChildren) delete child;
+}
+
 void Quadtree::Insert(ColliderID object, const AABB& bounds)
 {
-	if (!mWorldBounds.Contains(bounds))
+	// does this bounds intersect with this node?
+	if (!mWorldBounds.Intersects(bounds))
+		// the input does not intersect with this node
+		// it has no place here
 		return;
 
-	if (mChildren[0] != nullptr)
+	// has this node split yet?
+	if (mChildren[0] == nullptr)
 	{
-		// this node has split
-		int index = GetIndex(bounds);
-		if (index != -1)
-			mChildren[index]->Insert(object, bounds);
-	}
+		// the node has not split
+		// insert the object into this node
+		mObjects.push_front(object);
+		mObjectCount++;
 
-	mObjects.push_front(object);
-	mObjectCount++;
-
-	if (mObjectCount > NODE_CAPACITY)
-	{
-		if (mChildren[0] == nullptr)
-			Split();
-
-		auto it = mObjects.begin();
-		while (it != mObjects.end())
+		// should this object now split?
+		if (mObjectCount > NODE_CAPACITY && mLevel < MAX_LEVELS)
 		{
-			const AABB& childBouns = CollisionWorld::Instance()->Get(*it);
-			int index = GetIndex(childBouns);
-
-			if (index != -1)
-			{
-				mChildren[index]->Insert(*it, CollisionWorld::Instance()->Get(*it));
-				// remove object from this nodes objects, as it will belong to its children
-				it = mObjects.erase(it);
-				mObjectCount--;
-			}
-			else
-				it++;
+			// split the node
+			Split();
 		}
+	}
+	else
+	{
+		// the node has split
+		// insert input into children
+		// note that one bounds may exist in multiple children,
+		// this is the case when a bounds exists on the boundary between nodes
+		for (auto& child : mChildren) child->Insert(object, bounds);
 	}
 }
 
 void Quadtree::Delete(ColliderID object, const AABB& bounds)
 {
-	if (mChildren[0] != nullptr)
-	{
-		int index = GetIndex(bounds);
+	// if the bounds does not intersect with this node do nothing
+	if (!mWorldBounds.Intersects(bounds))
+		return;
 
-		if (index == -1)
-		{
-			mObjects.remove(object);
-		}
-		else
-		{
-			mChildren[index]->Delete(object, bounds);
-		}
+	// if this node has children then seach them to delete the object
+	// otherwise delete from this object
+	if (mChildren[0] == nullptr)
+	{
+		mObjects.remove(object);
+		mObjectCount--;
 	}
 	else
 	{
-		mObjects.remove(object);
+		for (auto& child : mChildren) child->Delete(object, bounds);
+	}
+}
+
+void Quadtree::Clear()
+{
+	mObjects.clear();
+	mObjectCount = 0;
+	if (mChildren[0] != nullptr)
+	{
+		// destroy children
+		for (auto& child : mChildren)
+		{
+			delete child;
+			child = nullptr;
+		}
 	}
 }
 
@@ -76,64 +93,46 @@ void Quadtree::Split()
 	float x = mWorldBounds.TopLeft().x;
 	float y = mWorldBounds.TopLeft().y;
 
-	mChildren[0] = new Quadtree({ x + w, y,     w, h }); // NE
-	mChildren[1] = new Quadtree({ x + w, y + h, w, h }); // SE
-	mChildren[2] = new Quadtree({ x,     y + h, w, h }); // SW
-	mChildren[3] = new Quadtree({ x,     y,     w, h }); // NW
+	mChildren[0] = new Quadtree({ x + w, y,     w, h }, mLevel + 1); // NE
+	mChildren[1] = new Quadtree({ x + w, y + h, w, h }, mLevel + 1); // SE
+	mChildren[2] = new Quadtree({ x,     y + h, w, h }, mLevel + 1); // SW
+	mChildren[3] = new Quadtree({ x,     y,     w, h }, mLevel + 1); // NW
+
+	// go through objects in this node and insert them into children
+	for (auto& object : mObjects)
+	{
+		const auto& bounds = CollisionWorld::Instance()->Get(object);
+		for (auto& child : mChildren) child->Insert(object, bounds);
+	}
+	// now that all the objects exist in the children, we can remove them from this node
+	mObjects.clear();
+	mObjectCount = 0;
 }
 
-int Quadtree::GetIndex(const AABB& bounds)
-{
-	// the object can completely fit in the top half of the space 
-	// if the bottom of the bounds is higher than the midpoint of this node
-	bool topHalf = bounds.TopLeft().y + bounds.Size().y < mWorldBounds.Centre().y;
-	// object can completely fit in bottom half if top of bounds is below midpoint
-	bool bottomHalf = bounds.TopLeft().y > mWorldBounds.Centre().y;
-
-	// object can completely fit in left half if right is left of midpoint
-	if (bounds.TopLeft().x + bounds.Size().x < mWorldBounds.Centre().x)
-	{
-		if (topHalf)
-			return 3; // NW
-		else if (bottomHalf)
-			return 2; // SW
-	}
-	// object can completely fit in right half if left is right of midpoint
-	else if (bounds.TopLeft().x > mWorldBounds.Centre().x)
-	{
-		if (topHalf)
-			return 0; // NE
-		else if (bottomHalf)
-			return 1; // SE
-	}
-
-	// the bounds does not COMPLETELY fit in any of the quadrants
-	return -1;
-}
 
 void Quadtree::Retrieve(std::vector<ColliderID>& out, const AABB& bounds)
 {
 	if (!mWorldBounds.Intersects(bounds))
 	{
 		// the bounds do not intersect with this node,
-		// therefor it cannot collide with anything in this node or its children
+		// therefore it cannot collide with anything in this node or its children
 
 		// do not modify the output vector
 		return;
 	}
 
-	// the bounds DOES intersect with this node, so add all objects at this level into the output
-	out.insert(out.end(), mObjects.begin(), mObjects.end());
-
 	// check if there are children to this node
 	if (mChildren[0] == nullptr)
 	{
-		// there are no children so proceed no further
-		return;
+		// there are no children, this is a leaf of the quadtree
+		// add any objects in this node
+		out.insert(out.end(), mObjects.begin(), mObjects.end());
 	}
-
-	for (auto& child : mChildren)
+	else
 	{
-		child->Retrieve(out, bounds);
+		for (auto& child : mChildren)
+		{
+			child->Retrieve(out, bounds);
+		}
 	}
 }

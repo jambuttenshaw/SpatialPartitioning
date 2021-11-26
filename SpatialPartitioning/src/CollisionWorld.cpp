@@ -3,11 +3,23 @@
 
 CollisionWorld::~CollisionWorld()
 {
-	delete mSpatialPartition;
+	// its possible the spatital partition may never be set
+	if (mSpatialPartition != nullptr)
+		delete mSpatialPartition;
+}
+
+void CollisionWorld::SetWorldBounds(const AABB& worldBounds)
+{
+	assert((mSpatialPartition == nullptr) && "Cannot modify world size after creating spatial partition!");
+	mWorldBounds = worldBounds;
 }
 
 ColliderID CollisionWorld::AddAABB(const AABB& aabb)
 {
+	// make sure the AABB is entirely inside the world
+	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
+	assert((mWorldBounds.Contains(aabb)) && "AABB is outside of the world!");
+
 	// TODO: add check to make sure we havent reached max colliders yet
 
 	// get the next available ID for a collider
@@ -57,6 +69,18 @@ void CollisionWorld::DeleteAABB(ColliderID id)
 
 	// remove the last item from the vector
 	mObjects.erase(mObjects.begin() + lastIndex);
+}
+
+void CollisionWorld::Clear()
+{
+	// Empty all collision geometry in the world and restart collider ID's
+	mSpatialPartition->Clear();
+
+	mObjects.clear();
+	mIDToIndex.clear();
+	mIndexToID.clear();
+
+	mNextID = ColliderID();
 }
 
 void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)
@@ -112,7 +136,10 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 
 	for (auto potentialCollisionID : potentialCollisions)
 	{
-		const AABB& potentialCollision = Get(potentialCollisionID);
+		// make sure were not comparing an object with itself
+		if (potentialCollisionID != id)
+		{
+			const AABB& potentialCollision = Get(potentialCollisionID);
 
 		if (object.Intersects(potentialCollision))
 			collisions.insert(potentialCollisionID);

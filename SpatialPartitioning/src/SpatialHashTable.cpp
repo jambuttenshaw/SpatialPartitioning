@@ -19,9 +19,7 @@ void SpatialHashTable::Insert(ColliderID object, const AABB& bounds)
 {
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
-	assert((mWorldBounds.Contains(bounds.TopLeft()) &&
-		mWorldBounds.Contains(bounds.TopLeft() + bounds.Size()))
-		&& "AABB is outside of the world!");
+	assert((mWorldBounds.Contains(bounds)) && "AABB is outside of the world!");
 
 
 	// get the grid index of the topleft and bottom right of the object
@@ -58,14 +56,22 @@ void SpatialHashTable::Delete(ColliderID object, const AABB& bounds)
 
 
 	// iterate through every cell the object is in
-	for (int y = topLeftCell.y; y < bottomRightCell.y - topLeftCell.y; y++)
+	for (int y = topLeftCell.y; y < bottomRightCell.y; y++)
 	{
-		for (int x = topLeftCell.x; x < bottomRightCell.x - topLeftCell.x; x++)
+		for (int x = topLeftCell.x; x < bottomRightCell.x; x++)
 		{
 			// remove this object from this cell
 			mTable[GetIndex({ x, y })].remove(object);
 		}
 	}
+}
+
+void SpatialHashTable::Clear()
+{
+	// empty the table
+	mTable.clear();
+	// then re-initialize the table back to its empty state
+	mTable.resize(mCellsX * mCellsY);
 }
 
 void SpatialHashTable::Retrieve(std::vector<ColliderID>& out, const AABB& bounds)
@@ -81,9 +87,9 @@ void SpatialHashTable::Retrieve(std::vector<ColliderID>& out, const AABB& bounds
 	Vector2i bottomRightCell = GetCell(bounds.TopLeft() + bounds.Size());
 
 	// iterate through every cell the object is in
-	for (int y = topLeftCell.y; y < bottomRightCell.y - topLeftCell.y; y++)
+	for (int y = topLeftCell.y; y < bottomRightCell.y; y++)
 	{
-		for (int x = topLeftCell.x; x < bottomRightCell.x - topLeftCell.x; x++)
+		for (int x = topLeftCell.x; x < bottomRightCell.x; x++)
 		{
 			// add everything in this cell to the potential collisions
 			auto& bucket = mTable[GetIndex({ x, y })];

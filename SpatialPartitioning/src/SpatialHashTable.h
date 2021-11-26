@@ -13,6 +13,8 @@ public:
 	virtual void Insert(ColliderID object, const AABB& bounds) override;
 	virtual void Delete(ColliderID object, const AABB& bounds) override;
 
+	virtual void Clear() override;
+
 	virtual void Retrieve(std::vector<ColliderID>& out, const AABB& bounds) override;
 
 private:
@@ -31,10 +33,4 @@ private:
 	// all cells in the grid are square, so it need only be represented by a single float
 	const float mCellSize = 4.0f;
 	size_t mCellsX = 0, mCellsY = 0;
-
-	// the number of buckets that have at least one collider in them
-	size_t mCount = 0;
-	// the total number of colliders in the spatial partition
-	// NOTE: a collider can appear in multiple buckets, which his value does not take into account
-	size_t mColliderCount = 0;
 };
