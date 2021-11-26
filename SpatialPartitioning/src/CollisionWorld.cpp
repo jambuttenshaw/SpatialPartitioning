@@ -140,9 +140,9 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 		if (potentialCollisionID != id)
 		{
 			const AABB& potentialCollision = Get(potentialCollisionID);
-
-		if (object.Intersects(potentialCollision))
-			collisions.insert(potentialCollisionID);
+			if (object.Intersects(potentialCollision))
+				collisions.insert(potentialCollisionID);
+		}
 	}
 	//collisions.shrink_to_fit();
 	return collisions;
