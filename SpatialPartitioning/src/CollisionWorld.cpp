@@ -96,7 +96,7 @@ AABB& CollisionWorld::GetNonConst(ColliderID id)
 }
 
 
-std::vector<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
+std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 {
 	const AABB& object = Get(id);
 	
@@ -106,18 +106,18 @@ std::vector<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 
 
 	// perform narrow-phase collision detection
-	std::vector<ColliderID> collisions;
+	std::set<ColliderID> collisions;
 	// so that collisions will definitely only be resized once
-	collisions.reserve(potentialCollisions.size());
+	//collisions.reserve(potentialCollisions.size());
 
 	for (auto potentialCollisionID : potentialCollisions)
 	{
 		const AABB& potentialCollision = Get(potentialCollisionID);
 
 		if (object.Intersects(potentialCollision))
-			collisions.push_back(potentialCollisionID);
+			collisions.insert(potentialCollisionID);
 	}
-	collisions.shrink_to_fit();
+	//collisions.shrink_to_fit();
 	return collisions;
 }
 

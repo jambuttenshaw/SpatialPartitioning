@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include <vector>
 #include <unordered_map>
 #include <type_traits>
@@ -49,7 +50,7 @@ public:
 
 	const AABB& Get(ColliderID id);
 
-	std::vector<ColliderID> GetCollisions(ColliderID id);
+	std::set<ColliderID> GetCollisions(ColliderID id);
 
 private:
 	// only allow AABB's to be directly modified from within this class
