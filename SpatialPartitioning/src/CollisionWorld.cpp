@@ -12,8 +12,19 @@ CollisionWorld::~CollisionWorld()
 
 void CollisionWorld::SetWorldBounds(const AABB& worldBounds)
 {
-	assert((mSpatialPartition == nullptr) && "Cannot modify world size after creating spatial partition!");
 	mWorldBounds = worldBounds;
+
+	// when the world is resized, the spacial partition needs completely reconstructed
+	if (mSpatialPartition != nullptr)
+	{
+		mSpatialPartition->ClearAndResizeWorld(worldBounds);
+
+		// re-insert all geometry in the collision world into the spacial partition
+		for (const auto& collider : mIDToIndex)
+		{
+			mSpatialPartition->Insert(collider.first, mObjects[collider.second]);
+		}
+	}
 }
 
 ColliderID CollisionWorld::AddAABB(const AABB& aabb)

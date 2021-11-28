@@ -16,6 +16,12 @@ public:
 	SpatialPartition(const AABB& worldBounds) : mWorldBounds(worldBounds) {}
 	virtual ~SpatialPartition() = default;
 
+	void ClearAndResizeWorld(const AABB& worldBounds)
+	{
+		Clear();
+		mWorldBounds = worldBounds;
+	}
+
 	/*
 	* IMPORTANT!
 	* NOWHERE inside a spatial partitioning system should pointers to AABB's be stored as members
