@@ -43,9 +43,20 @@ void Instrumentor::EndSession()
 	mSessionOpen = false;
 }
 
-void Instrumentor::WriteResult(const InstrumentorResult& result)
+void Instrumentor::WriteLabel(const std::string& label)
 {
-	WriteData(result.Name, result.Duration.count());
+	if (!mSessionOpen)
+	{
+		std::cout << "Error: No session active" << std::endl;
+		return;
+	}
+
+	// Write result in csv format
+	std::stringstream resultString;
+	resultString << label << "\n";
+
+	mOutputStream << resultString.str();
+	mOutputStream.flush();
 }
 
 void Instrumentor::TrackAverageValue(const std::string& name, double value)
@@ -73,8 +84,8 @@ Instrumentor* Instrumentor::Get()
 
 
 
-InstrumentorTimer::InstrumentorTimer(const std::string& name)
-	: mName(name)
+InstrumentorTimer::InstrumentorTimer(const std::string& name, bool average)
+	: mName(name), mAveraging(average)
 {
 	mStartTime = std::chrono::steady_clock::now();
 }
@@ -89,11 +100,19 @@ void InstrumentorTimer::Stop()
 {
 	auto endTime = std::chrono::steady_clock::now();
 
-	// get time elapsed
-	auto elapsedDuration = std::chrono::duration_cast<DurationType>(endTime - mStartTime);
+	// get time elapsed in milliseconds
+	double elapsedDuration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(endTime - mStartTime).count()) / 1000.0;
 
-	// store result in instrumentor session
-	Instrumentor::Get()->WriteResult({ mName, elapsedDuration });
+	// are we directly storing this result, or storing the average time taken by timers of this name?
+	if (mAveraging)
+	{
+		Instrumentor::Get()->TrackAverageValue(mName, elapsedDuration);
+	}
+	else
+	{
+		// store result in instrumentor session
+		Instrumentor::Get()->WriteData(mName, elapsedDuration);
+	}
 }
 
 

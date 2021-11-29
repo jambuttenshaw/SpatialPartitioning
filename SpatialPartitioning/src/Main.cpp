@@ -2,42 +2,23 @@
 
 #include "Utilities/Random.h"
 #include "Utilities/Instrumentor.h"
+
 #include "CollisionWorld.h"
 #include "SpatialHashTable.h"
 #include "Quadtree.h"
 
-#include <iostream>
-#include <cassert>
+#include "Tests/Tests.h"
 
 
 AABB worldBounds{ {0, 0}, {100, 100} };
 
-
-void OneIteration()
+const size_t colliderCounts[4]
 {
-	// place 300 colliders into the world
-	const size_t colliderCount = 1000;
-	ColliderID ids[colliderCount];
-	for (size_t i = 0; i < colliderCount; i++)
-	{
-		Vector2 newSize = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.Size() * 0.1f);
-		//Vector2f newSize = { 2, 2 };
-		Vector2f newPosition = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
-		ids[i] = CollisionWorld::Instance()->AddAABB({ newPosition, newSize });
-	}
-
-	size_t collisionCount = 0;
-	{
-		PROFILE_SCOPE("SingleIteration");
-		for (size_t i = 0; i < colliderCount; i++)
-		{
-			collisionCount += CollisionWorld::Instance()->GetCollisions(ids[i]).size();
-		}
-	}
-	std::cout << "Number of collisions found: " << collisionCount << std::endl;
-
-	CollisionWorld::Instance()->Clear();
-}
+	10,
+	100,
+	500,
+	1000
+};
 
 
 int main()
@@ -49,11 +30,9 @@ int main()
 	CollisionWorld::Instance()->SetWorldBounds(worldBounds);
 	CollisionWorld::Instance()->SetSpatialPartitioner<Quadtree>();
 	
-
-	const size_t numIterations = 100;
-	for (size_t i = 0; i < numIterations; i++)
+	for (size_t j = 0; j < 4; j++) 
 	{
-		OneIteration();
+		RunAllTests(colliderCounts[j]);
 	}
 
 

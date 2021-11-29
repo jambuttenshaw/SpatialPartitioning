@@ -67,6 +67,7 @@ public:
 	void Resize(ColliderID id, const Vector2f& newSize);
 
 	const AABB& Get(ColliderID id);
+	inline const AABB& GetWorldBounds() const { return mWorldBounds; }
 
 	std::set<ColliderID> GetCollisions(ColliderID id);
 	std::set<ColliderID> GetCollisionsBruteForce(ColliderID id);

@@ -101,25 +101,29 @@ void CollisionWorld::Clear()
 
 void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)
 {
+	assert(id < mObjects.size());
+
+	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id).Translate(translation);
-	// update object data inside spatial partition
-	assert(false);
+	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
 }
 
 void CollisionWorld::SetPosition(ColliderID id, const Vector2f& position)
 {
+	assert(id < mObjects.size());
+
+	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id).SetPosition(position);
-	// update object data inside spatial partition
-	assert(false);
+	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
 }
 
 void CollisionWorld::Resize(ColliderID id, const Vector2f& newSize)
 {
 	assert(id < mObjects.size());
 
+	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id).Resize(newSize);
-	// update object data inside spatial partition
-	assert(false);
+	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
 }
 
 

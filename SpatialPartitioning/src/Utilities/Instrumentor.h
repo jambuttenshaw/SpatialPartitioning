@@ -9,13 +9,11 @@
 #include <unordered_map>
 
 
-using DurationType = std::chrono::microseconds;
-
-
 struct InstrumentorResult
 {
 	std::string Name;
-	DurationType Duration;
+	// in milliseconds
+	double Duration;
 };
 
 
@@ -31,7 +29,6 @@ public:
 	void BeginSession(const std::string& name, const std::string& filepath, bool append);
 	void EndSession();
 
-	void WriteResult(const InstrumentorResult& result);
 	template<typename T>
 	void WriteData(std::string label, T data)
 	{
@@ -49,6 +46,7 @@ public:
 		mOutputStream << resultString.str();
 		mOutputStream.flush();
 	}
+	void WriteLabel(const std::string& label);
 
 	void TrackAverageValue(const std::string& name, double value);
 
@@ -71,7 +69,7 @@ public:
 class InstrumentorTimer
 {
 public:
-	InstrumentorTimer(const std::string& name);
+	InstrumentorTimer(const std::string& name, bool average);
 	~InstrumentorTimer();
 
 private:
@@ -80,6 +78,8 @@ private:
 
 private:
 	std::string mName;
+	bool mAveraging = false;
+
 	std::chrono::steady_clock::time_point mStartTime;
 	bool mStopped = false;
 };
@@ -89,19 +89,27 @@ private:
 #define ENABLE_INSTRUMENTOR 1
 #if ENABLE_INSTRUMENTOR
 
-	#define BEGIN_PROFILE_SESSION(name, filepath, append) Instrumentor::Get()->BeginSession(name, filepath, append);
-	#define END_PROFILE_SESSION() Instrumentor::Get()->EndSession();
-	#define PROFILE_SCOPE_LINE(name, line) InstrumentorTimer timer##line(name);
-	#define PROFILE_SCOPE(name)	PROFILE_SCOPE_LINE(name, __LINE__)
+	#define BEGIN_PROFILE_SESSION(name, filepath, append)	Instrumentor::Get()->BeginSession(name, filepath, append);
+	#define END_PROFILE_SESSION()							Instrumentor::Get()->EndSession();
 
-	#define TRACK_AVERAGE(value) Instrumentor::Get()->TrackAverageValue(#value, static_cast<double>(value));
+	#define PROFILE_SCOPE_LINE(name, line)					InstrumentorTimer timer##line(name, false);
+	#define PROFILE_SCOPE(name)								PROFILE_SCOPE_LINE(name, __LINE__)
+
+	#define PROFILE_SCOPE_AVERAGE_LINE(name, line)			InstrumentorTimer timer##line(name, true);
+	#define PROFILE_SCOPE_AVERAGE(name)						PROFILE_SCOPE_AVERAGE_LINE(name, __LINE__)
+
+	#define TRACK_AVERAGE(value)							Instrumentor::Get()->TrackAverageValue(#value, static_cast<double>(value));
 
 #else
 
 	#define BEGIN_PROFILE_SESSION(name, filepath, append)
 	#define END_PROFILE_SESSION()
+
 	#define PROFILE_SCOPE_LINE(name, line)
 	#define PROFILE_SCOPE(name)
+
+	#define PROFILE_SCOPE_AVERAGE_LINE(name, line)
+	#define PROFILE_SCOPE_AVERAGE(name)				
 
 	#define TRACK_AVERAGE(value)
 
