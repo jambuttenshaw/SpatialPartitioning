@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <algorithm>
 
 template<typename T>
 class Vector2
@@ -39,6 +40,18 @@ public:
 
 	T x = T();
 	T y = T();
+
+
+	inline static Vector2<T> Min(const Vector2<T>& a, const Vector2<T>& b)
+	{
+		return Vector2<T>(std::min(a.x, b.x), std::min(a.y, b.y));
+	}
+
+	inline static Vector2<T> Max(const Vector2<T>& a, const Vector2<T>& b)
+	{
+		return Vector2<T>(std::max(a.x, b.x), std::max(a.y, b.y));
+	}
+
 
 	static const Vector2<float> Zero;
 };

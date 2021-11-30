@@ -14,10 +14,9 @@
 
 AABB worldBounds{ {0, 0}, {100, 100} };
 
-const size_t cases = 3;
+const size_t cases = 2;
 const size_t colliderCounts[]
 {
-	10,
 	100,
 	500,
 	1000,

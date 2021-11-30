@@ -99,6 +99,14 @@ void CollisionWorld::Clear()
 	mNextID = ColliderID();
 }
 
+void CollisionWorld::ResetObject(ColliderID id, const AABB& bounds)
+{
+	assert(id < mObjects.size());
+	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
+	GetNonConst(id) = bounds;
+	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
+}
+
 void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)
 {
 	assert(id < mObjects.size());
@@ -149,13 +157,10 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 	
 	// perform broad-phase collision detection using the spacial partition
 	std::set<ColliderID> potentialCollisions;
-	{
-		PROFILE_SCOPE_AVERAGE("RetrieveColliders" + std::to_string(mObjects.size()));
-		mSpatialPartition->Retrieve(potentialCollisions, object);
-	}
+	mSpatialPartition->Retrieve(potentialCollisions, object);
 
-	size_t AverageCollisionChecks = potentialCollisions.size();
-	TRACK_AVERAGE(AverageCollisionChecks);
+	//size_t AverageCollisionChecks = potentialCollisions.size();
+	//TRACK_AVERAGE(AverageCollisionChecks);
 
 	std::set<ColliderID> collisions;
 	
@@ -185,8 +190,8 @@ std::set<ColliderID> CollisionWorld::GetCollisionsBruteForce(ColliderID id)
 
 	// even though this is obvious from the test case,
 	// its helpful to output it into the csv file
-	size_t AverageCollisionChecks = mIDToIndex.size();
-	TRACK_AVERAGE(AverageCollisionChecks);
+	//size_t AverageCollisionChecks = mIDToIndex.size();
+	//TRACK_AVERAGE(AverageCollisionChecks);
 
 	for (const auto& collider : mIDToIndex)
 	{

@@ -7,8 +7,9 @@ Vector2f AxisAlignedBoundingBox::Centre() const
 
 bool AxisAlignedBoundingBox::Contains(const Vector2f& point) const
 {
-    return  (point.x > mPosition.x && point.x < mPosition.x + mSize.x) &&
-            (point.y > mPosition.y && point.y < mPosition.y + mSize.y);
+    // note: if the point is on the border of the aabb it is considerd to be contained by the aabb
+    return  (point.x >= mPosition.x && point.x <= mPosition.x + mSize.x) &&
+            (point.y >= mPosition.y && point.y <= mPosition.y + mSize.y);
 }
 
 bool AxisAlignedBoundingBox::Contains(const AxisAlignedBoundingBox& aabb) const

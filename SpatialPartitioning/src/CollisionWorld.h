@@ -61,6 +61,8 @@ public:
 
 	void Clear();
 	
+	void ResetObject(ColliderID id, const AABB& bounds);
+
 	void Translate(ColliderID id, const Vector2f& translation);
 	void SetPosition(ColliderID id, const Vector2f& position);
 	
