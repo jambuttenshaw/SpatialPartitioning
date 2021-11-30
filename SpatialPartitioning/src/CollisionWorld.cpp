@@ -149,14 +149,17 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 	
 	// perform broad-phase collision detection using the spacial partition
 	std::set<ColliderID> potentialCollisions;
-	mSpatialPartition->Retrieve(potentialCollisions, object);
+	{
+		PROFILE_SCOPE_AVERAGE("RetrieveColliders" + std::to_string(mObjects.size()));
+		mSpatialPartition->Retrieve(potentialCollisions, object);
+	}
 
-	size_t averageCollisionChecks = potentialCollisions.size();
-	TRACK_AVERAGE(averageCollisionChecks);
+	size_t AverageCollisionChecks = potentialCollisions.size();
+	TRACK_AVERAGE(AverageCollisionChecks);
 
-	// perform narrow-phase collision detection
 	std::set<ColliderID> collisions;
-
+	
+	// perform narrow-phase collision detection
 	for (auto potentialCollisionID : potentialCollisions)
 	{
 		// make sure were not comparing an object with itself
@@ -166,8 +169,8 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 			if (object.Intersects(potentialCollision))
 				collisions.insert(potentialCollisionID);
 		}
-	}
-
+	}	
+	
 	return collisions;
 }
 
@@ -179,6 +182,12 @@ std::set<ColliderID> CollisionWorld::GetCollisionsBruteForce(ColliderID id)
 	std::set<ColliderID> collisions;
 
 	const AABB& boundingBox = Get(id);
+
+	// even though this is obvious from the test case,
+	// its helpful to output it into the csv file
+	size_t AverageCollisionChecks = mIDToIndex.size();
+	TRACK_AVERAGE(AverageCollisionChecks);
+
 	for (const auto& collider : mIDToIndex)
 	{
 		if (id == collider.first)

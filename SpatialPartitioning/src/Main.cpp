@@ -9,31 +9,57 @@
 
 #include "Tests/Tests.h"
 
+#include <iostream>
+
 
 AABB worldBounds{ {0, 0}, {100, 100} };
 
-const size_t colliderCounts[4]
+const size_t cases = 3;
+const size_t colliderCounts[]
 {
 	10,
 	100,
 	500,
-	1000
+	1000,
+	2500,
+	5000
 };
+
+
+void RunAllTestsForAllCases()
+{
+	for (size_t j = 0; j < cases; j++)
+	{
+		std::cout << "Running case " << colliderCounts[j] << std::endl;
+		RunAllTests(colliderCounts[j]);
+	}
+}
 
 
 int main()
 {
 	Random::Init();
-	BEGIN_PROFILE_SESSION("Quadtree", "Quadtree.csv", false);
-
-	// set up the collision world
 	CollisionWorld::Instance()->SetWorldBounds(worldBounds);
-	CollisionWorld::Instance()->SetSpatialPartitioner<Quadtree>();
+
+	std::cout << "Testing Brute Force Method" << std::endl;
+	BEGIN_PROFILE_SESSION("BruteForce", "Results.csv", false);
+	RunAllTestsForAllCases();
+	END_PROFILE_SESSION();
+
+
+	std::cout << "Testing Spatial Hash Table Method" << std::endl;
+	BEGIN_PROFILE_SESSION("SpatialHashTable", "Results.csv", true);
+	CollisionWorld::Instance()->SetSpatialPartitioner<SpatialHashTable>();
+	RunAllTestsForAllCases();
+	END_PROFILE_SESSION();
+
 	
-	for (size_t j = 0; j < 4; j++) 
-	{
-		RunAllTests(colliderCounts[j]);
-	}
+	std::cout << "Testing Quadtree Method" << std::endl;
+	BEGIN_PROFILE_SESSION("Quadtree", "Results.csv", true);
+	CollisionWorld::Instance()->SetSpatialPartitioner<Quadtree>();
+	RunAllTestsForAllCases();
+	END_PROFILE_SESSION();
+	
 
 
 	Random::Shutdown();

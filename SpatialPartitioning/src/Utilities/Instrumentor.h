@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-#include <unordered_map>
+#include <map>
 
 
 struct InstrumentorResult
@@ -40,7 +40,7 @@ public:
 
 		// Write result in csv format
 		std::stringstream resultString;
-		resultString << std::setprecision(3) << std::fixed;
+		resultString << std::setprecision(5) << std::fixed;
 		resultString << label << "," << data << "\n";
 
 		mOutputStream << resultString.str();
@@ -59,7 +59,7 @@ private:
 
 	std::ofstream mOutputStream;
 
-	std::unordered_map<std::string, std::pair<double, size_t>> mAverages;
+	std::map<std::string, std::pair<double, size_t>> mAverages;
 
 public:
 	static Instrumentor* Get();
@@ -80,8 +80,7 @@ private:
 	std::string mName;
 	bool mAveraging = false;
 
-	std::chrono::steady_clock::time_point mStartTime;
-	bool mStopped = false;
+	std::chrono::high_resolution_clock::time_point mStartTime;
 };
 
 

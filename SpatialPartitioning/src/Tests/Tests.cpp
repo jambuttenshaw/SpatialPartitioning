@@ -6,7 +6,7 @@
 #include "CollisionWorld.h"
 
 
-static const size_t gTestIterations = 100;
+static const size_t gTestIterations = 300;
 
 
 void RunAllTests(size_t colliderCount)
@@ -44,7 +44,7 @@ void RandomSizeAndPositionTest(size_t colliderCount, ColliderID* ids)
 	{
 		ColliderID id = ids[i];
 		
-		Vector2f newSize = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.Size() * 0.5f);
+		Vector2f newSize = Random::RandomVector({ 0.2f, 0.2f }, { 5.0f, 5.0f });
 		Vector2f newPos = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
 
 		CollisionWorld::Instance()->Resize(id, newSize);
@@ -55,9 +55,9 @@ void RandomSizeAndPositionTest(size_t colliderCount, ColliderID* ids)
 	size_t collisionCount = 0;
 	for (size_t iteration = 0; iteration < gTestIterations; iteration++)
 	{
-		PROFILE_SCOPE_AVERAGE("RandomSizeAndPosition" + std::to_string(colliderCount));
 		for (size_t i = 0; i < colliderCount; i++)
 		{
+			PROFILE_SCOPE_AVERAGE("RandomSizeAndPosition" + std::to_string(colliderCount));
 			collisionCount += CollisionWorld::Instance()->GetCollisions(ids[i]).size();
 		}
 	}

@@ -38,9 +38,17 @@ void Instrumentor::EndSession()
 		WriteData(average.first, averageValue);
 	}
 
+	// write footer
+	
+	// spacing for readability
+	WriteLabel("\n\n");
+
 	// Close file
 	mOutputStream.close();
 	mSessionOpen = false;
+
+	// reset data
+	mAverages.clear();
 }
 
 void Instrumentor::WriteLabel(const std::string& label)
@@ -87,18 +95,19 @@ Instrumentor* Instrumentor::Get()
 InstrumentorTimer::InstrumentorTimer(const std::string& name, bool average)
 	: mName(name), mAveraging(average)
 {
-	mStartTime = std::chrono::steady_clock::now();
+	//std::cout << mName << " started timing." << std::endl;
+	mStartTime = std::chrono::high_resolution_clock::now();
 }
 
 InstrumentorTimer::~InstrumentorTimer()
 {
-	if (!mStopped)
-		Stop();
+	Stop();
+	//std::cout << mName << " stopped timing." << std::endl;
 }
 
 void InstrumentorTimer::Stop()
 {
-	auto endTime = std::chrono::steady_clock::now();
+	auto endTime = std::chrono::high_resolution_clock::now();
 
 	// get time elapsed in milliseconds
 	double elapsedDuration = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(endTime - mStartTime).count()) / 1000.0;

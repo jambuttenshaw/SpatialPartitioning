@@ -1,5 +1,6 @@
 #include "SpatialHashTable.h"
 
+#include "Utilities/Instrumentor.h"
 #include <cassert>
 
 SpatialHashTable::SpatialHashTable(const AABB& worldBounds)
