@@ -19,6 +19,12 @@ Quadtree::~Quadtree()
 	for (auto& child : mChildren) delete child;
 }
 
+void Quadtree::ClearAndResizeWorld(const AABB& bounds)
+{
+	Clear();
+	mWorldBounds = bounds;
+}
+
 void Quadtree::Insert(ColliderID object, const AABB& bounds)
 {
 	// does this bounds intersect with this node?
@@ -36,7 +42,7 @@ void Quadtree::Insert(ColliderID object, const AABB& bounds)
 		mObjectCount++;
 
 		// should this object now split?
-		if (mObjectCount > NODE_CAPACITY && mLevel < MAX_LEVELS)
+		if (mObjectCount > mNodeCapacity && mLevel < mMaxLevels)
 		{
 			// split the node
 			Split();
@@ -135,4 +141,28 @@ void Quadtree::Retrieve(std::set<ColliderID>& out, const AABB& bounds)
 			child->Retrieve(out, bounds);
 		}
 	}
+}
+
+void Quadtree::SetNodeLimit(size_t limit)
+{
+	assert((mObjectCount == 0) && "Cannot change node limit while node is not empty!");
+
+	if (mChildren[0] != nullptr)
+	{
+		for (auto child : mChildren) child->SetNodeLimit(limit);
+	}
+
+	mMaxLevels = limit;
+}
+
+void Quadtree::SetNodeCapacity(size_t capacity)
+{
+	assert((mObjectCount == 0) && "Cannot change node capacity while node is not empty!");
+
+	if (mChildren[0] != nullptr)
+	{
+		for (auto child : mChildren) child->SetNodeCapacity(capacity);
+	}
+
+	mNodeCapacity = capacity;
 }

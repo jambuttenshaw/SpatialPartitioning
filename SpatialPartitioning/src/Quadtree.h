@@ -20,12 +20,17 @@ public:
 
 	virtual ~Quadtree();
 
+	virtual void ClearAndResizeWorld(const AABB& bounds) override;
+
 	virtual void Insert(ColliderID object, const AABB& bounds) override;
 	virtual void Delete(ColliderID object, const AABB& bounds) override;
 
 	virtual void Clear() override;
 
 	virtual void Retrieve(std::set<ColliderID>& out, const AABB& bounds) override;
+
+	void SetNodeLimit(size_t limit);
+	void SetNodeCapacity(size_t capacity);
 
 private:
 
@@ -44,6 +49,6 @@ private:
 	size_t mLevel = 0;
 
 private:
-	static inline constexpr size_t NODE_CAPACITY = 10;
-	static inline constexpr size_t MAX_LEVELS = 5;
+	size_t mNodeCapacity = 10;
+	size_t mMaxLevels = 5;
 };

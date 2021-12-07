@@ -6,14 +6,14 @@
 SpatialHashTable::SpatialHashTable(const AABB& worldBounds)
 	: SpatialPartition(worldBounds)
 {
-	// number of cells on the x axis
-	mCellsX = static_cast<size_t>(floorf(mWorldBounds.Size().x / mCellSize));
-	mCellsY = static_cast<size_t>(floorf(mWorldBounds.Size().y / mCellSize));
+	SetupTable();
+}
 
-	// resize the table to match the number of cells in the grid
-	// as the world is a fixed size, we can design our hash function such that collisions are impossible
-	size_t cellCount = mCellsX * mCellsY;
-	mTable.resize(cellCount);
+void SpatialHashTable::ClearAndResizeWorld(const AABB& bounds)
+{
+	Clear();
+	mWorldBounds = bounds;
+	SetupTable();
 }
 
 void SpatialHashTable::Insert(ColliderID object, const AABB& bounds)
@@ -40,6 +40,8 @@ void SpatialHashTable::Insert(ColliderID object, const AABB& bounds)
 			mTable[GetIndex({ x, y })].emplace_front(object);
 		}
 	}
+
+	mObjectCount++;
 }
 
 void SpatialHashTable::Delete(ColliderID object, const AABB& bounds)
@@ -65,6 +67,8 @@ void SpatialHashTable::Delete(ColliderID object, const AABB& bounds)
 			mTable[GetIndex({ x, y })].remove(object);
 		}
 	}
+
+	mObjectCount--;
 }
 
 void SpatialHashTable::Clear()
@@ -73,6 +77,8 @@ void SpatialHashTable::Clear()
 	mTable.clear();
 	// then re-initialize the table back to its empty state
 	mTable.resize(mCellsX * mCellsY);
+
+	mObjectCount = 0;
 }
 
 void SpatialHashTable::Retrieve(std::set<ColliderID>& out, const AABB& bounds)
@@ -99,6 +105,28 @@ void SpatialHashTable::Retrieve(std::set<ColliderID>& out, const AABB& bounds)
 	}
 }
 
+void SpatialHashTable::SetCellSize(float cellSize)
+{
+	assert((mObjectCount == 0) && "Cannot adjust cell size while spatial partition is not empty!");
+
+	mCellSize = cellSize;
+
+	// reset the table size
+	SetupTable();
+}
+
+
+void SpatialHashTable::SetupTable()
+{
+	// number of cells on the x axis
+	mCellsX = static_cast<size_t>(ceilf(mWorldBounds.Size().x / mCellSize));
+	mCellsY = static_cast<size_t>(ceilf(mWorldBounds.Size().y / mCellSize));
+
+	// resize the table to match the number of cells in the grid
+	// as the world is a fixed size, we can design our hash function such that collisions are impossible
+	size_t cellCount = mCellsX * mCellsY;
+	mTable.resize(cellCount);
+}
 
 Vector2i SpatialHashTable::GetCell(Vector2f position)
 {

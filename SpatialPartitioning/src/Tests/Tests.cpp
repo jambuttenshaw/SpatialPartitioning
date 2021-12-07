@@ -4,6 +4,10 @@
 #include "Utilities/Instrumentor.h"
 
 #include "CollisionWorld.h"
+#include "SpatialHashTable.h"
+#include "Quadtree.h"
+
+#include <array>
 
 
 static const size_t gTestIterations = 300;
@@ -142,6 +146,41 @@ void DenselyClumpedObjectsTest(size_t colliderCount, ColliderID* ids)
 
 void WorldSizesTest(size_t colliderCount)
 {
+	ColliderID* ids = new ColliderID[colliderCount];
+
+
+	std::array<AABB, 4> worldBoundsCases = {
+		AABB{0.0f, 0.0f, 10.0f, 10.0f},
+		AABB{0.0f, 0.0f, 50.0f, 50.0f},
+		AABB{0.0f, 0.0f, 100.0f, 100.0f},
+		AABB{0.0f, 0.0f, 250.0f, 250.0f}
+	};
+
+	// for each cell size:
+	//		insert a number of colliders into the spatial partition
+	//		run tests
+	//		clear
+	for (const AABB& worldBounds : worldBoundsCases)
+	{
+		CollisionWorld::Instance()->Clear();
+		CollisionWorld::Instance()->SetWorldBounds(worldBounds);
+
+
+		// insert into spatial hash table
+		for (size_t i = 0; i < colliderCount; i++)
+		{
+			Vector2f newSize = Random::RandomVector({ 0.2f, 0.2f }, { 5.0f, 5.0f });
+			Vector2f newPos = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
+			ids[i] = CollisionWorld::Instance()->AddAABB({ newPos, newSize });
+		}
+
+		std::stringstream testName;
+		testName << "WorldSize" << static_cast<int>(worldBounds.Size().x);
+		testName << "x" << static_cast<int>(worldBounds.Size().y);
+		PerformCollisionTest(testName.str(), colliderCount, ids);
+	}
+
+	delete[] ids;
 }
 
 void InsertionAndDeletionOverheadTest(size_t colliderCount)
@@ -176,18 +215,123 @@ void InsertionAndDeletionOverheadTest(size_t colliderCount)
 
 
 
-void NodeLimitTest(size_t colliderCount, ColliderID* ids)
+void NodeLimitTest(size_t colliderCount)
 {
+	const AABB& worldBounds = CollisionWorld::Instance()->GetWorldBounds();
+
+	ColliderID* ids = new ColliderID[colliderCount];
+
+
+	std::array<size_t, 4> nodeLimitCases = {
+		3,
+		5,
+		7,
+		10
+	};
+
+	// for each cell size:
+	//		insert a number of colliders into the spatial partition
+	//		run tests
+	//		clear
+	for (size_t nodeLimit : nodeLimitCases)
+	{
+		CollisionWorld::Instance()->Clear();
+
+		Quadtree* quadtree = static_cast<Quadtree*>(CollisionWorld::Instance()->GetSpatialPartition());
+		quadtree->SetNodeLimit(nodeLimit);
+
+		// insert into spatial hash table
+		for (size_t i = 0; i < colliderCount; i++)
+		{
+			Vector2f newSize = Random::RandomVector({ 0.2f, 0.2f }, { 5.0f, 5.0f });
+			Vector2f newPos = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
+			ids[i] = CollisionWorld::Instance()->AddAABB({ newPos, newSize });
+		}
+
+		PerformCollisionTest("NodeLimit" + std::to_string(nodeLimit), colliderCount, ids);
+	}
+
+	delete[] ids;
 }
 
-void NodeCapacityTest(size_t colliderCount, ColliderID* ids)
+void NodeCapacityTest(size_t colliderCount)
 {
+	const AABB& worldBounds = CollisionWorld::Instance()->GetWorldBounds();
+
+	ColliderID* ids = new ColliderID[colliderCount];
+
+
+	std::array<size_t, 4> nodeCapacityCases = {
+		5,
+		10,
+		15,
+		20
+	};
+
+	// for each cell size:
+	//		insert a number of colliders into the spatial partition
+	//		run tests
+	//		clear
+	for (size_t nodeCapacity : nodeCapacityCases)
+	{
+		CollisionWorld::Instance()->Clear();
+
+		Quadtree* quadtree = static_cast<Quadtree*>(CollisionWorld::Instance()->GetSpatialPartition());
+		quadtree->SetNodeCapacity(nodeCapacity);
+
+		// insert into spatial hash table
+		for (size_t i = 0; i < colliderCount; i++)
+		{
+			Vector2f newSize = Random::RandomVector({ 0.2f, 0.2f }, { 5.0f, 5.0f });
+			Vector2f newPos = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
+			ids[i] = CollisionWorld::Instance()->AddAABB({ newPos, newSize });
+		}
+
+		PerformCollisionTest("NodeCapacity" + std::to_string(nodeCapacity), colliderCount, ids);
+	}
+
+	delete[] ids;
 }
 
 
 
-void CellSizeTest(size_t colliderCount, ColliderID* ids)
+void CellSizeTest(size_t colliderCount)
 {
+	const AABB& worldBounds = CollisionWorld::Instance()->GetWorldBounds();
+
+	ColliderID* ids = new ColliderID[colliderCount];
+
+
+	std::array<float, 4> cellSizeCases = {
+		2.0f,
+		4.0f,
+		8.0f,
+		16.0f
+	};
+
+	// for each cell size:
+	//		insert a number of colliders into the spatial partition
+	//		run tests
+	//		clear
+	for (float cellSize : cellSizeCases)
+	{
+		CollisionWorld::Instance()->Clear();
+		
+		SpatialHashTable* sHT = static_cast<SpatialHashTable*>(CollisionWorld::Instance()->GetSpatialPartition());
+		sHT->SetCellSize(cellSize);
+
+		// insert into spatial hash table
+		for (size_t i = 0; i < colliderCount; i++)
+		{
+			Vector2f newSize = Random::RandomVector({ 0.2f, 0.2f }, { 5.0f, 5.0f });
+			Vector2f newPos = Random::RandomVector({ 0.1f, 0.1f }, worldBounds.TopLeft() + worldBounds.Size() - newSize);
+			ids[i] = CollisionWorld::Instance()->AddAABB({ newPos, newSize });
+		}
+
+		PerformCollisionTest("CellSize" + std::to_string(static_cast<int>(cellSize)), colliderCount, ids);
+	}
+
+	delete[] ids;
 }
 
 
@@ -200,7 +344,7 @@ void PerformCollisionTest(const std::string& testName, size_t colliderCount, Col
 	{
 		for (size_t i = 0; i < colliderCount; i++)
 		{
-			PROFILE_SCOPE_AVERAGE(testName + std::to_string(colliderCount));
+			PROFILE_SCOPE_AVERAGE(testName + "_" + std::to_string(colliderCount));
 			collisionCount += CollisionWorld::Instance()->GetCollisions(ids[i]).size();
 		}
 	}

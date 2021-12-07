@@ -11,6 +11,8 @@ public:
 	SpatialHashTable(const AABB& worldBounds);
 	virtual ~SpatialHashTable() = default;
 
+	virtual void ClearAndResizeWorld(const AABB& bounds) override;
+
 	virtual void Insert(ColliderID object, const AABB& bounds) override;
 	virtual void Delete(ColliderID object, const AABB& bounds) override;
 
@@ -18,7 +20,11 @@ public:
 
 	virtual void Retrieve(std::set<ColliderID>& out, const AABB& bounds) override;
 
+	void SetCellSize(float size);
+
 private:
+
+	void SetupTable();
 
 	Vector2i GetCell(Vector2f position);
 	size_t GetIndex(Vector2i cell);
@@ -32,6 +38,8 @@ private:
 
 	// the size of each cell in the grid
 	// all cells in the grid are square, so it need only be represented by a single float
-	const float mCellSize = 4.0f;
+	float mCellSize = 4.0f;
 	size_t mCellsX = 0, mCellsY = 0;
+
+	size_t mObjectCount = 0;
 };

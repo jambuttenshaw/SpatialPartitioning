@@ -54,6 +54,8 @@ public:
 			mSpatialPartition->Insert(collider.first, mObjects[collider.second]);
 		}
 	}
+	SpatialPartition* GetSpatialPartition() const { return mSpatialPartition; }
+
 	void SetWorldBounds(const AABB& worldBounds);
 
 	ColliderID AddAABB(const AABB& aabb);

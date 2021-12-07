@@ -20,11 +20,11 @@ void WorldSizesTest(size_t colliderCount);
 void InsertionAndDeletionOverheadTest(size_t colliderCount);
 
 // quadtree specific tests
-void NodeLimitTest(size_t colliderCount, ColliderID* ids);
-void NodeCapacityTest(size_t colliderCount, ColliderID* ids);
+void NodeLimitTest(size_t colliderCount);
+void NodeCapacityTest(size_t colliderCount);
 
 // hash table specific tests
-void CellSizeTest(size_t colliderCount, ColliderID* ids);
+void CellSizeTest(size_t colliderCount);
 
 
 

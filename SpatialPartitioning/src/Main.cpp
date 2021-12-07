@@ -42,7 +42,7 @@ int main()
 
 	std::cout << "Testing Brute Force Method" << std::endl;
 	BEGIN_PROFILE_SESSION("BruteForce", "Results.csv", false);
-	RunAllTestsForAllCases();
+	//RunAllTestsForAllCases();
 	END_PROFILE_SESSION();
 
 
@@ -50,6 +50,12 @@ int main()
 	BEGIN_PROFILE_SESSION("SpatialHashTable", "Results.csv", true);
 	CollisionWorld::Instance()->SetSpatialPartitioner<SpatialHashTable>();
 	RunAllTestsForAllCases();
+	// spatial hash table specific tests
+	for (size_t j = 0; j < cases; j++)
+	{
+		std::cout << "Running case " << colliderCounts[j] << std::endl;
+		CellSizeTest(colliderCounts[j]);
+	}
 	END_PROFILE_SESSION();
 
 	
@@ -57,6 +63,13 @@ int main()
 	BEGIN_PROFILE_SESSION("Quadtree", "Results.csv", true);
 	CollisionWorld::Instance()->SetSpatialPartitioner<Quadtree>();
 	RunAllTestsForAllCases();
+	// quadtree specific tests
+	for (size_t j = 0; j < cases; j++)
+	{
+		std::cout << "Running case " << colliderCounts[j] << std::endl;
+		NodeLimitTest(colliderCounts[j]);
+		NodeCapacityTest(colliderCounts[j]);
+	}
 	END_PROFILE_SESSION();
 	
 

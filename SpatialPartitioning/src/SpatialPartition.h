@@ -16,11 +16,7 @@ public:
 	SpatialPartition(const AABB& worldBounds) : mWorldBounds(worldBounds) {}
 	virtual ~SpatialPartition() = default;
 
-	void ClearAndResizeWorld(const AABB& worldBounds)
-	{
-		Clear();
-		mWorldBounds = worldBounds;
-	}
+	virtual void ClearAndResizeWorld(const AABB& worldBounds) = 0;
 
 	/*
 	* IMPORTANT!
