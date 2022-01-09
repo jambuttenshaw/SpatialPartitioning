@@ -20,8 +20,9 @@ public:
 
 	/*
 	* IMPORTANT!
-	* NOWHERE inside a spatial partitioning system should pointers to AABB's be stored as members
-	* when an AABB is deleted from the collision world, this will likely invalidate this pointer
+	* A spatial partitioning system should NOT store pointers to AABB's.
+	* when an AABB is deleted from the collision world, this re-orders some AABB's in memory to preserve data locality.
+	* This will invalidate the pointers to the AABB
 	* and you will have no way of knowing this has happened!
 	* 
 	* Use CollisionWorld::Get(ColliderID) to get the AABB of an object given its ID

@@ -32,10 +32,10 @@ void Instrumentor::EndSession()
 	if (!mSessionOpen) return;
 
 	// write all averages that the instrumentor has been keeping track of to file
-	for (const auto& average : mAverages)
+	for (const auto& [name, value] : mAverages)
 	{
-		double averageValue = average.second.first / static_cast<double>(average.second.second);
-		WriteData(average.first, averageValue);
+		double averageValue = value.first / static_cast<double>(value.second);
+		WriteData(name, averageValue);
 	}
 
 	// write footer
@@ -69,16 +69,20 @@ void Instrumentor::WriteLabel(const std::string& label)
 
 void Instrumentor::TrackAverageValue(const std::string& name, double value)
 {
+	// is this the first time this value has been tracked?
 	if (mAverages.find(name) == mAverages.end())
 	{
+		// it is, we need to make a new entry for it in the averages map
 		auto data = std::make_pair(value, size_t(1));
 		mAverages.insert(std::make_pair(name, data));
 	}
 	else
 	{
-		auto& data = mAverages[name];
-		data.first += value;
-		data.second++;
+		// we have seen this name before
+		// we can increment the value and the occurrences
+		auto& [totalTime, occurrences] = mAverages[name];
+		totalTime += value;
+		occurrences++;
 	}
 }
 

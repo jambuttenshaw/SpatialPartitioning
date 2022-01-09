@@ -20,9 +20,9 @@ void CollisionWorld::SetWorldBounds(const AABB& worldBounds)
 		mSpatialPartition->ClearAndResizeWorld(worldBounds);
 
 		// re-insert all geometry in the collision world into the spacial partition
-		for (const auto& collider : mIDToIndex)
+		for (const auto& [id, index] : mIDToIndex)
 		{
-			mSpatialPartition->Insert(collider.first, mObjects[collider.second]);
+			mSpatialPartition->Insert(id, mObjects[index]);
 		}
 	}
 }
@@ -32,8 +32,6 @@ ColliderID CollisionWorld::AddAABB(const AABB& aabb)
 	// make sure the AABB is entirely inside the world
 	// if both corners of the AABB are inside the world, the entire AABB must be inside the world
 	assert((mWorldBounds.Contains(aabb)) && "AABB is outside of the world!");
-
-	// TODO: add check to make sure we havent reached max colliders yet
 
 	// get the next available ID for a collider
 	ColliderID newID = mNextID;
@@ -101,16 +99,20 @@ void CollisionWorld::Clear()
 
 void CollisionWorld::ResetObject(ColliderID id, const AABB& bounds)
 {
-	assert(id < mObjects.size());
+	// make sure the id is valid
+	assert(mIDToIndex.find(id) != mIDToIndex.end());
+	
+	// to modify the bounds of an object, it has to be removed from the spatial partition then re-inserted after modification
 	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id) = bounds;
-	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
+	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, bounds);
 }
 
 void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)
 {
-	assert(id < mObjects.size());
+	assert(mIDToIndex.find(id) != mIDToIndex.end());
 
+	// to modify the bounds of an object, it has to be removed from the spatial partition then re-inserted after modification
 	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id).Translate(translation);
 	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
@@ -118,8 +120,9 @@ void CollisionWorld::Translate(ColliderID id, const Vector2f& translation)
 
 void CollisionWorld::SetPosition(ColliderID id, const Vector2f& position)
 {
-	assert(id < mObjects.size());
+	assert(mIDToIndex.find(id) != mIDToIndex.end());
 
+	// to modify the bounds of an object, it has to be removed from the spatial partition then re-inserted after modification
 	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id).SetPosition(position);
 	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
@@ -127,8 +130,9 @@ void CollisionWorld::SetPosition(ColliderID id, const Vector2f& position)
 
 void CollisionWorld::Resize(ColliderID id, const Vector2f& newSize)
 {
-	assert(id < mObjects.size());
+	assert(mIDToIndex.find(id) != mIDToIndex.end());
 
+	// to modify the bounds of an object, it has to be removed from the spatial partition then re-inserted after modification
 	if (mSpatialPartition != nullptr) mSpatialPartition->Delete(id, Get(id));
 	GetNonConst(id).Resize(newSize);
 	if (mSpatialPartition != nullptr) mSpatialPartition->Insert(id, Get(id));
@@ -138,30 +142,37 @@ void CollisionWorld::Resize(ColliderID id, const Vector2f& newSize)
 const AABB& CollisionWorld::Get(ColliderID id)
 {
 	assert(mIDToIndex.find(id) != mIDToIndex.end());
+	// returns the bounds of the object with ID, that cannot be modified
 	return mObjects[mIDToIndex[id]];
 }
 
 AABB& CollisionWorld::GetNonConst(ColliderID id)
 {
 	assert(mIDToIndex.find(id) != mIDToIndex.end());
+	// returns the bounds of the object with ID, that can be modified
+	// for use within this class only
 	return mObjects[mIDToIndex[id]];
 }
 
 
 std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 {
+	assert(mIDToIndex.find(id) != mIDToIndex.end());
+
+	// if we do not have a spatial partition then we perform brute force method
 	if (mSpatialPartition == nullptr) return GetCollisionsBruteForce(id);
 
-
+	// get the bounds of the object
 	const AABB& object = Get(id);
-	
+
 	// perform broad-phase collision detection using the spacial partition
+
+	// create a container to hold all potential collisions
+	// a set is used as that automatically guarantees that 
 	std::set<ColliderID> potentialCollisions;
 	mSpatialPartition->Retrieve(potentialCollisions, object);
 
-	//size_t AverageCollisionChecks = potentialCollisions.size();
-	//TRACK_AVERAGE(AverageCollisionChecks);
-
+	// a container of all confirmed collisions
 	std::set<ColliderID> collisions;
 	
 	// perform narrow-phase collision detection
@@ -170,8 +181,10 @@ std::set<ColliderID> CollisionWorld::GetCollisions(ColliderID id)
 		// make sure were not comparing an object with itself
 		if (potentialCollisionID != id)
 		{
+			// test if the two objects actually overlap
 			const AABB& potentialCollision = Get(potentialCollisionID);
 			if (object.Intersects(potentialCollision))
+				// they do, a collision has been found
 				collisions.insert(potentialCollisionID);
 		}
 	}	
@@ -193,16 +206,16 @@ std::set<ColliderID> CollisionWorld::GetCollisionsBruteForce(ColliderID id)
 	//size_t AverageCollisionChecks = mIDToIndex.size();
 	//TRACK_AVERAGE(AverageCollisionChecks);
 
-	for (const auto& collider : mIDToIndex)
+	for (const auto& [colliderId, index] : mIDToIndex)
 	{
-		if (id == collider.first)
+		if (id == colliderId)
 			continue;
 
-		const AABB& otherBoundingBox = mObjects[collider.second];
+		const AABB& otherBoundingBox = mObjects[index];
 
 		if (boundingBox.Intersects(otherBoundingBox))
 		{
-			collisions.insert(collider.first);
+			collisions.insert(colliderId);
 		}
 	}
 

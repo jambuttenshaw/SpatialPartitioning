@@ -146,6 +146,7 @@ size_t SpatialHashTable::GetIndex(Vector2i cell)
 
 bool SpatialHashTable::BucketContainsCollider(ColliderID collider, size_t bucketIndex)
 {
+	// check if a collider is in a bucket
 	auto& bucket = mTable[bucketIndex];
 	for (const auto& i : bucket)
 	{

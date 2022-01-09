@@ -14,14 +14,13 @@
 
 AABB worldBounds{ {0, 0}, {100, 100} };
 
-const size_t cases = 2;
+const size_t cases = 4;
 const size_t colliderCounts[]
 {
 	100,
 	500,
 	1000,
-	2500,
-	5000
+	2500
 };
 
 
@@ -42,7 +41,7 @@ int main()
 
 	std::cout << "Testing Brute Force Method" << std::endl;
 	BEGIN_PROFILE_SESSION("BruteForce", "Results.csv", false);
-	//RunAllTestsForAllCases();
+	RunAllTestsForAllCases();
 	END_PROFILE_SESSION();
 
 

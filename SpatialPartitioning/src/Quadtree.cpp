@@ -64,7 +64,7 @@ void Quadtree::Delete(ColliderID object, const AABB& bounds)
 	if (!mWorldBounds.Intersects(bounds))
 		return;
 
-	// if this node has children then seach them to delete the object
+	// if this node has children then search them to delete the object
 	// otherwise delete from this object
 	if (mChildren[0] == nullptr)
 	{
@@ -79,6 +79,7 @@ void Quadtree::Delete(ColliderID object, const AABB& bounds)
 
 void Quadtree::Clear()
 {
+	// delete this object and its children
 	mObjects.clear();
 	mObjectCount = 0;
 	if (mChildren[0] != nullptr)
@@ -86,6 +87,8 @@ void Quadtree::Clear()
 		// destroy children
 		for (auto& child : mChildren)
 		{
+			// we dont need to call child.Clear(),
+			// as calling its destructor will recursively delete all children below this node
 			delete child;
 			child = nullptr;
 		}
@@ -94,11 +97,14 @@ void Quadtree::Clear()
 
 void Quadtree::Split()
 {
+	// split the bounds of this node into quarters
 	float w = 0.5f * mWorldBounds.Size().x;
 	float h = 0.5f * mWorldBounds.Size().y;
 	float x = mWorldBounds.TopLeft().x;
 	float y = mWorldBounds.TopLeft().y;
 
+	// create 4 new children, each taking up one quarter of this nodes bounds
+	// with a level one greater than this node
 	mChildren[0] = new Quadtree({ x + w, y,     w, h }, mLevel + 1); // NE
 	mChildren[1] = new Quadtree({ x + w, y + h, w, h }, mLevel + 1); // SE
 	mChildren[2] = new Quadtree({ x,     y + h, w, h }, mLevel + 1); // SW
@@ -131,11 +137,12 @@ void Quadtree::Retrieve(std::set<ColliderID>& out, const AABB& bounds)
 	if (mChildren[0] == nullptr)
 	{
 		// there are no children, this is a leaf of the quadtree
-		// add any objects in this node
+		// add any objects in this node as they could intersect with the input bounds
 		out.insert(mObjects.begin(), mObjects.end());
 	}
 	else
 	{
+		// search this nodes children for any potential collisions
 		for (auto& child : mChildren)
 		{
 			child->Retrieve(out, bounds);
@@ -147,6 +154,7 @@ void Quadtree::SetNodeLimit(size_t limit)
 {
 	assert((mObjectCount == 0) && "Cannot change node limit while node is not empty!");
 
+	// recursively set the node limit to all of this nodes children
 	if (mChildren[0] != nullptr)
 	{
 		for (auto child : mChildren) child->SetNodeLimit(limit);
@@ -159,6 +167,7 @@ void Quadtree::SetNodeCapacity(size_t capacity)
 {
 	assert((mObjectCount == 0) && "Cannot change node capacity while node is not empty!");
 
+	// recursively set the node capacity to all of this nodes children
 	if (mChildren[0] != nullptr)
 	{
 		for (auto child : mChildren) child->SetNodeCapacity(capacity);
